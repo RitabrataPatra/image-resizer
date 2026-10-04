@@ -493,6 +493,35 @@ export const CropWorkspace: React.FC<CropWorkspaceProps> = ({
       ? targetHeight
       : Math.max(1, Math.round(effectiveCrop.height * effectiveImgH));
 
+
+
+  // Prevent the webpage from scrolling when zooming inside the workspace window
+useEffect(() => {
+  const windowEl = windowRef.current;
+  if (!windowEl) return;
+
+  const handleWheel = (e: WheelEvent) => {
+    // 1. Stop the browser from scrolling the webpage structure
+    e.preventDefault();
+
+    // 2. Adjust the zoom state manually using your existing zoom levels
+    // Scroll up (negative deltaY) zooms in, scroll down zooms out
+    const zoomFactor = e.deltaY < 0 ? 0.1 : -0.1;
+    
+    // Using a functional state update guarantees you get the absolute latest zoom value
+    setZoom((prevZoom) => Math.max(1, Math.min(5, Number((prevZoom + zoomFactor).toFixed(2)))));
+  };
+
+  // Attaching with 'passive: false' allows e.preventDefault() to actually block page scrolling
+  windowEl.addEventListener('wheel', handleWheel, { passive: false });
+
+  // Clean up the listener when the component unmounts or elements update
+  return () => {
+    windowEl.removeEventListener('wheel', handleWheel);
+  };
+}, [windowRef]);
+
+
   return (
     <section aria-labelledby="crop-heading" className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
