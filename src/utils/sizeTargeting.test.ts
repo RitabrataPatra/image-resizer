@@ -5,6 +5,7 @@ import {
   distanceToRange,
 } from './sizeTargeting.ts';
 import { cmToPixels, getCenteredCropForAspect } from './dimensions.ts';
+import { QUICK_PRESETS, PRESETS } from '../data/presets';
 
 interface MockBlob {
   size: number;
@@ -118,5 +119,58 @@ describe('dimension & range utilities', () => {
     assert.equal(crop.height, 1);
     assert.equal(crop.x, 0.25);
     assert.equal(crop.y, 0);
+  });
+
+  it('keeps quick presets limited to visible button presets, even when draft routes are unpublished', () => {
+    const visibleButtonPresets = PRESETS.filter((preset) => preset.showAsButton === true);
+
+    assert.ok(
+      visibleButtonPresets.some((preset) => preset.slug === 'photo-20-kb'),
+      'Photo 20 KB should remain a visible quick-preset option while staying unpublished'
+    );
+    assert.ok(
+      QUICK_PRESETS.length <= 4,
+      `Expected at most 4 quick presets, received ${QUICK_PRESETS.length}`
+    );
+    assert.deepEqual(
+      QUICK_PRESETS.map((preset) => preset.slug),
+      visibleButtonPresets.slice(0, 4).map((preset) => preset.slug),
+      'Quick preset order should follow the showAsButton flags without publishing draft routes'
+    );
+  });
+
+  it('keeps pixel dimensions only for presets that define them', () => {
+    const fileSizeOnlySlugs = [
+      'photo-50-kb',
+      'photo-20-kb',
+      'photo-100-kb',
+      'photo-200-kb',
+      'government-exam-photo-50-kb',
+      'background-verification-photo-50-kb',
+      'college-admission-photo-50-kb',
+      'signature-10-kb',
+      'signature-20-kb',
+    ];
+
+    for (const slug of fileSizeOnlySlugs) {
+      const preset = PRESETS.find((item) => item.slug === slug);
+      assert.ok(preset, `Expected preset ${slug}`);
+      assert.equal(preset.width, undefined);
+      assert.equal(preset.height, undefined);
+      assert.equal(preset.widthCm, undefined);
+      assert.equal(preset.heightCm, undefined);
+      assert.equal(preset.dpi, undefined);
+      assert.equal(preset.sourceUrl, undefined);
+      assert.equal(preset.lastVerified, undefined);
+    }
+
+    const passportPreset = PRESETS.find(
+      (item) => item.slug === 'passport-size-photo-35x45-mm'
+    );
+    assert.ok(passportPreset);
+    assert.equal(passportPreset.width, 413);
+    assert.equal(passportPreset.height, 531);
+    assert.equal(passportPreset.widthCm, 3.5);
+    assert.equal(passportPreset.heightCm, 4.5);
   });
 });

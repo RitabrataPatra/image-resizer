@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { BRAND_NAME, TOOL_NAME } from '../site';
+---
+
+<Layout
+  title={`About | ${BRAND_NAME}`}
+  description={`What ${BRAND_NAME} is, how it works, and what to keep in mind when using it.`}
+>
+  <main class="mx-auto max-w-3xl px-4 py-10 sm:px-8">
+    <h1 class="text-4xl font-bold tracking-tight text-slate-900">About {TOOL_NAME}</h1>
+    <p class="mt-4 text-lg text-slate-600">
+      {TOOL_NAME} is a free tool from {BRAND_NAME} that resizes and compresses photos and signatures to the dimensions and file size an online form asks for.
+    </p>
+    <p class="mt-4 text-slate-600">
+      Online forms often reject uploads that are a few KB too large or the wrong shape. {BRAND_NAME} helps you fix that quickly, without installing software or uploading your photo to a server.
+    </p>
+
+    <h2 class="mt-8 text-2xl font-bold tracking-tight text-slate-900">How it works</h2>
+    <p class="mt-3 text-slate-600">
+      You choose an image, crop it, and set the size you need. The resizing happens in your browser, on your own device. Your images are not uploaded anywhere.
+    </p>
+
+    <h2 class="mt-8 text-2xl font-bold tracking-tight text-slate-900">What to keep in mind</h2>
+    <p class="mt-3 text-slate-600">
+      The tool outputs JPG files. Preset sizes are starting points only. Always check the requirements on the form you are submitting, because they differ between forms and can change.
+    </p>
+    <p class="mt-4 text-slate-600">
+      Questions, or a size that looks wrong? Please use the <a href="/contact/" class="font-medium text-slate-900 underline underline-offset-4">Contact page</a>.
+    </p>
+    <p class="mt-4 text-slate-600">
+      {BRAND_NAME} builds simple, private tools for everyday document tasks.
+    </p>
+  </main>
+</Layout>

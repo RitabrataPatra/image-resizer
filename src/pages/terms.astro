@@ -1,0 +1,45 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { BRAND_NAME, TOOL_NAME } from '../site';
+---
+
+<Layout
+  title={`Terms of Use | ${BRAND_NAME}`}
+  description={`Terms of use for the ${TOOL_NAME}.`}
+  robots="noindex"
+>
+  <main class="mx-auto max-w-3xl px-4 py-10 sm:px-8">
+    <h1 class="text-4xl font-bold tracking-tight text-slate-900">Terms of Use</h1>
+    <p class="mt-4 text-lg text-slate-600">
+      Last updated: October 2026
+    </p>
+
+    <h2 class="mt-8 text-2xl font-bold tracking-tight text-slate-900">Use of the tool</h2>
+    <p class="mt-3 text-slate-600">
+      {TOOL_NAME} is provided free of charge and "as is". We do not guarantee that an image produced by the tool will be accepted by any website, portal or organization.
+    </p>
+
+    <h2 class="mt-8 text-2xl font-bold tracking-tight text-slate-900">Your responsibility</h2>
+    <p class="mt-3 text-slate-600">
+      Preset sizes are starting points and may be out of date. You are responsible for checking the requirements of the form or service you are submitting to.
+    </p>
+
+    <h2 class="mt-8 text-2xl font-bold tracking-tight text-slate-900">No affiliation</h2>
+    <p class="mt-3 text-slate-600">
+      {BRAND_NAME} is an independent tool. It is not affiliated with any government body, exam authority, employer or website that may be mentioned on this site.
+    </p>
+
+    <h2 class="mt-8 text-2xl font-bold tracking-tight text-slate-900">Your content</h2>
+    <p class="mt-3 text-slate-600">
+      You keep all rights to your images. They are processed on your device and are not sent to us.
+    </p>
+
+    <h2 class="mt-8 text-2xl font-bold tracking-tight text-slate-900">Changes</h2>
+    <p class="mt-3 text-slate-600">
+      We may change the site or these terms at any time. Continued use means you accept the updated terms.
+    </p>
+
+    <h2 class="mt-8 text-2xl font-bold tracking-tight text-slate-900">Contact</h2>
+    <p class="mt-3 text-slate-600">patraritabrata6@gmail.com</p>
+  </main>
+</Layout>

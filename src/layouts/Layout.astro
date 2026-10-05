@@ -1,0 +1,70 @@
+---
+import '../index.css';
+import { BRAND_NAME, TOOL_NAME, SITE_URL } from '../site';
+
+const {
+  title = `${TOOL_NAME}: Resize Any Image to Any Size or KB`,
+  description = 'Resize any image to a custom size or KB target in your browser for free. Images never leave your device.',
+  robots,
+} = Astro.props;
+const pathname = Astro.url.pathname.endsWith('/')
+  ? Astro.url.pathname
+  : `${Astro.url.pathname}/`;
+const canonicalUrl = new URL(pathname, SITE_URL).toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    {robots && <meta name="robots" content={robots} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`${SITE_URL}/social-preview.png`} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={BRAND_NAME} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${SITE_URL}/social-preview.png`} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalUrl} />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+    <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur-md">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-8">
+        <a href="/" class="font-display text-lg font-bold tracking-tight text-slate-900">
+          {BRAND_NAME}
+        </a>
+        <nav class="hidden items-center gap-5 text-sm font-medium text-slate-600 md:flex">
+          <a href="/" class="hover:text-slate-900 hover:underline underline-offset-4">Home</a>
+          <a href="/about" class="hover:text-slate-900 hover:underline underline-offset-4">About</a>
+          <a href="/contact" class="hover:text-slate-900 hover:underline underline-offset-4">Contact</a>
+          <a href="/privacy" class="hover:text-slate-900 hover:underline underline-offset-4">Privacy</a>
+          <a href="/terms" class="hover:text-slate-900 hover:underline underline-offset-4">Terms</a>
+          <a href="/affiliate-disclosure" class="hover:text-slate-900 hover:underline underline-offset-4">Disclosure</a>
+        </nav>
+      </div>
+    </header>
+
+    <slot />
+
+    <footer class="border-t border-slate-200 bg-white">
+      <div class="mx-auto max-w-6xl px-4 py-6 text-sm text-slate-600 sm:px-8">
+        <nav class="flex flex-wrap items-center justify-center gap-4 text-center">
+          <a href="/" class="hover:text-slate-900 hover:underline underline-offset-4">Home</a>
+          <a href="/about" class="hover:text-slate-900 hover:underline underline-offset-4">About</a>
+          <a href="/contact" class="hover:text-slate-900 hover:underline underline-offset-4">Contact</a>
+          <a href="/privacy" class="hover:text-slate-900 hover:underline underline-offset-4">Privacy</a>
+          <a href="/terms" class="hover:text-slate-900 hover:underline underline-offset-4">Terms</a>
+          <a href="/affiliate-disclosure" class="hover:text-slate-900 hover:underline underline-offset-4">Affiliate Disclosure</a>
+          <a href="/all-sizes" class="hover:text-slate-900 hover:underline underline-offset-4">All sizes</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

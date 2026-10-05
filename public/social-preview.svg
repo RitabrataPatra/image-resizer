@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="ExactSpec social preview">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="88" y="88" width="1024" height="454" rx="30" fill="#ffffff" fill-opacity="0.1"/>
+  <text x="120" y="260" fill="#f8fafc" font-family="Arial, sans-serif" font-size="76" font-weight="700">ExactSpec</text>
+  <text x="120" y="340" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="34">Browser-based photo &amp; signature resizer</text>
+  <text x="120" y="430" fill="#f8fafc" font-family="Arial, sans-serif" font-size="42" font-weight="600">Resize • Crop • Compress</text>
+</svg>

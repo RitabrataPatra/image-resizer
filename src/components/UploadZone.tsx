@@ -61,8 +61,8 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
         >
           01. Source Photo or Signature
         </h2>
-        <span className="text-xs text-red-500">
-          Supports JPG , PNG , JPEG and any other image file type  · Up to 30 MB
+        <span className="text-xs text-red-700">
+          JPG and PNG only · Up to 30 MB
         </span>
       </div>
 
@@ -114,10 +114,10 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
               <Upload className="h-6 w-6" />
             </div>
             <p className="text-base font-semibold text-slate-900">
-              Select a photo or signature image
+              Select a JPG or PNG photo or signature image
             </p>
             <p className="mt-1 max-w-md text-lg sm:text-lg text-slate-500">
-              Drag and drop an image file here, or choose from your phone’s camera roll. Everything stays on your device.
+              Drag and drop a JPG or PNG file here, or choose from your phone’s camera roll. Everything stays on your device.
             </p>
             <br/>
             <p className="text-md font-bold text-slate-900">
@@ -132,7 +132,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
                 className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-transform active:scale-[0.99] hover:bg-slate-800 disabled:opacity-50 whitespace-nowrap"
               >
                 <FileImage className="h-4 w-4 shrink-0" />
-                <span>Choose Photo / Files</span>
+                <span>Choose JPG / PNG</span>
               </button>
 
               <button

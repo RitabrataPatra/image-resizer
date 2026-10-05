@@ -1,0 +1,90 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Resizer from '../App';
+import { PUBLISHED_PRESETS } from '../data/presets';
+import { BRAND_NAME } from '../site';
+
+export function getStaticPaths() {
+  return PUBLISHED_PRESETS.map((preset) => ({
+    params: { slug: preset.slug },
+    props: { preset },
+  }));
+}
+
+const { preset } = Astro.props;
+const hasVerifiedSource = Boolean(
+  preset.sourceUrl && !/TODO|example\.com/i.test(preset.sourceUrl)
+);
+const seoTitle =
+  preset.seoTitle ??
+  (preset.width !== undefined && preset.height !== undefined
+    ? `Resize ${preset.type === 'signature' ? 'Signature' : 'Photo'} to ${preset.width} × ${preset.height}px`
+    : preset.title);
+const pageTitle = `${seoTitle} | ${BRAND_NAME}`;
+const pageDescription =
+  preset.seoDescription ?? preset.description;
+const specRows = [
+  ...(preset.width !== undefined && preset.height !== undefined
+    ? [['Pixels', `${preset.width} × ${preset.height}px`]]
+    : []),
+  ...(preset.widthCm && preset.heightCm
+    ? [['Print size', `${preset.widthCm} × ${preset.heightCm} cm`]]
+    : []),
+  ...(preset.dpi ? [['DPI', `${preset.dpi} dpi`]] : []),
+  ['KB target', `${preset.minKB}–${preset.maxKB} KB`],
+];
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <main class="mx-auto max-w-6xl px-4 py-8 sm:px-8 sm:py-10">
+    <div class="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+        {preset.h1}
+      </h1>
+      <p class="mt-2 text-sm text-slate-600 sm:text-base">{preset.intro}</p>
+    </div>
+
+    <p class="mb-3 text-sm text-slate-600">
+      Need a different size? Change the values below.
+    </p>
+    <Resizer client:load initialPresetSlug={preset.slug} />
+
+    <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">Preset details</h2>
+      <div class="mt-5 overflow-hidden rounded-xl border border-slate-200">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm text-slate-700">
+          <tbody class="divide-y divide-slate-200">
+            {specRows.map(([label, value]) => (
+              <tr>
+                <th class="bg-slate-50 px-4 py-3 font-semibold text-slate-800">{label}</th>
+                <td class="px-4 py-3">{value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {hasVerifiedSource && preset.sourceUrl && (
+        <p class="mt-5 text-sm text-slate-600">
+          Source: <a href={preset.sourceUrl} class="font-medium text-slate-900 underline underline-offset-4" target="_blank" rel="noreferrer">{preset.sourceUrl}</a>
+        </p>
+      )}
+      {hasVerifiedSource && preset.lastVerified && (
+        <p class="mt-2 text-sm text-slate-600">
+          Last verified: <span class="font-medium text-slate-900">{preset.lastVerified}</span>
+        </p>
+      )}
+    </section>
+
+    <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">FAQs</h2>
+      <div class="mt-5 space-y-5">
+        {preset.faqs.map((faq) => (
+          <div class="border-b border-slate-100 pb-4 last:border-0 last:pb-0">
+            <h3 class="text-lg font-semibold text-slate-900">{faq.q}</h3>
+            <p class="mt-2 text-slate-600">{faq.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+</Layout>

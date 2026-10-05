@@ -1,5 +1,5 @@
 import React from 'react';
-import { PRESETS, ImagePreset } from '../presets';
+import { QUICK_PRESETS, type ImagePreset } from '../data/presets';
 import { cmToPixels, pixelsToCm } from '../utils/dimensions';
 
 export interface TargetSpecs {
@@ -24,6 +24,8 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
   onChangeSpecs,
   onApplyPreset,
 }) => {
+  const quickPresets = QUICK_PRESETS.slice(0, 4);
+
   const handlePixelChange = (field: 'widthPx' | 'heightPx', rawValue: string) => {
     const next = {
       ...specs,
@@ -107,7 +109,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
         >
           02. Upload Requirements & Presets
         </h2>
-        <span className="text-xs text-red-500">Output format · JPG</span>
+        <span className="text-xs text-red-700">Output format · JPG only</span>
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 space-y-5">
@@ -121,8 +123,8 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
               Tap to fill target specs
             </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {PRESETS.map((preset) => {
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {quickPresets.map((preset) => {
               const isSelected = specs.activePresetName === preset.name;
               return (
                 <button
@@ -135,7 +137,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
                       : 'border-slate-200 bg-slate-50/70 text-slate-900 hover:border-slate-300 hover:bg-slate-100/80'
                   }`}
                 >
-                  <span className="text-xs font-semibold whitespace-nowrap truncate w-full">
+                  <span className="w-full truncate whitespace-nowrap text-xs font-semibold">
                     {preset.name}
                   </span>
                   <span
@@ -143,7 +145,10 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
                       isSelected ? 'text-slate-300' : 'text-slate-500'
                     }`}
                   >
-                    {preset.width}×{preset.height} px · {preset.minKB}–{preset.maxKB} KB
+                    {preset.width !== undefined && preset.height !== undefined
+                      ? `${preset.width}×${preset.height} px · `
+                      : ''}
+                    {preset.minKB}–{preset.maxKB} KB
                   </span>
                 </button>
               );
@@ -155,7 +160,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
         <div className="border-t border-slate-100 pt-4 space-y-2.5">
           <div className="flex items-baseline justify-between">
             <label className="text-xs font-semibold text-slate-700">
-              Target File Size Range (KB) [<span className="text-xs text-blue-400">Set the minimum and maximum file sizes here</span>]
+              Target File Size Range (KB) [<span className="text-xs text-blue-700">Set the minimum and maximum file sizes here</span>]
             </label>
             <span className="text-xs text-slate-500">Required</span>
           </div>

@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { PUBLISHED_PRESETS } from '../data/presets';
+import { BRAND_NAME } from '../site';
+
+const groupedPresets = {
+  photo: PUBLISHED_PRESETS.filter((preset) => preset.type === 'photo'),
+  signature: PUBLISHED_PRESETS.filter((preset) => preset.type === 'signature'),
+};
+---
+
+<Layout title={`All sizes | ${BRAND_NAME}`} description={`Browse all published photo and signature size presets for ${BRAND_NAME}.`}>
+  <main class="mx-auto max-w-4xl px-4 py-10 sm:px-8">
+    <h1 class="text-4xl font-bold tracking-tight text-slate-900">All sizes</h1>
+    <p class="mt-4 max-w-2xl text-lg text-slate-600">
+      Browse the published presets for photo and signature uploads.
+    </p>
+
+    <div class="mt-8 space-y-8">
+      <section>
+        <h2 class="text-2xl font-bold tracking-tight text-slate-900">Photo presets</h2>
+        <ul class="mt-4 space-y-3">
+          {groupedPresets.photo.map((preset) => (
+            <li>
+              <a href={`/${preset.slug}/`} class="inline-flex items-center gap-2 text-base font-medium text-slate-800 underline decoration-slate-300 underline-offset-4 hover:text-slate-900">
+                <span>{preset.title}</span>
+                <span class="text-slate-500">({preset.width !== undefined && preset.height !== undefined ? `${preset.width} × ${preset.height} px · ` : ''}{preset.minKB}–{preset.maxKB} KB)</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-bold tracking-tight text-slate-900">Signature presets</h2>
+        <ul class="mt-4 space-y-3">
+          {groupedPresets.signature.map((preset) => (
+            <li>
+              <a href={`/${preset.slug}/`} class="inline-flex items-center gap-2 text-base font-medium text-slate-800 underline decoration-slate-300 underline-offset-4 hover:text-slate-900">
+                <span>{preset.title}</span>
+                <span class="text-slate-500">({preset.width !== undefined && preset.height !== undefined ? `${preset.width} × ${preset.height} px · ` : ''}{preset.minKB}–{preset.maxKB} KB)</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  </main>
+</Layout>

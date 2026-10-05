@@ -1,6 +1,0 @@
-{
-  "name": "ExactSpec Photo & Signature Resizer",
-  "description": "Mobile-first browser tool to crop, resize, and compress photos and signatures to exact KB file size ranges, pixel dimensions, or physical cm/DPI specifications.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
