@@ -1,11 +1,13 @@
 ---
 import '../index.css';
 import { BRAND_NAME, TOOL_NAME, SITE_URL } from '../site';
+import StructuredData from '../components/StructuredData.astro';
 
 const {
   title = `${TOOL_NAME}: Resize Any Image to Any Size or KB`,
   description = 'Resize any image to a custom size or KB target in your browser for free. Images never leave your device.',
   robots,
+  structuredData,
 } = Astro.props;
 const pathname = Astro.url.pathname.endsWith('/')
   ? Astro.url.pathname
@@ -33,6 +35,7 @@ const canonicalUrl = new URL(pathname, SITE_URL).toString();
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalUrl} />
     <title>{title}</title>
+    {structuredData && <StructuredData data={structuredData} />}
   </head>
   <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
     <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur-md">

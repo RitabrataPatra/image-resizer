@@ -1,10 +1,42 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Resizer from '../App';
-import { BRAND_NAME, TOOL_NAME } from '../site';
+import { BRAND_NAME, SITE_URL, TOOL_NAME } from '../site';
+
+const homepageTitle = `Free Image Resizer – Resize JPG, PNG & Images Online | ${BRAND_NAME}`;
+const homepageDescription =
+  'Resize JPG and PNG images online for free. Set custom dimensions or KB file-size limits, then process images privately in your browser without uploading them.';
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      name: BRAND_NAME,
+      url: `${SITE_URL}/`,
+      description: homepageDescription,
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${SITE_URL}/#webapp`,
+      name: TOOL_NAME,
+      url: `${SITE_URL}/`,
+      applicationCategory: 'ImageEditingApplication',
+      operatingSystem: 'Web Browser',
+      description: homepageDescription,
+      isPartOf: {
+        '@id': `${SITE_URL}/#website`,
+      },
+    },
+  ],
+};
 ---
 
-<Layout title={`${TOOL_NAME}: Resize Any Image to Any Size or KB`} description="Resize any image to a custom size or KB target in your browser for free. Images never leave your device.">
+<Layout
+  title={homepageTitle}
+  description={homepageDescription}
+  structuredData={structuredData}
+>
   <main class="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-8">
     <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
       <h1 class="max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">
