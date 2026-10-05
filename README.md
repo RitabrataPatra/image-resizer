@@ -31,16 +31,14 @@ Example:
   slug: 'photo-50-kb',
   type: 'photo',
   name: 'Photo 50 KB',
-  width: 400,
-  height: 500,
   minKB: 30,
   maxKB: 50,
   published: true,
   showAsButton: true,
-  seoTitle: 'Resize Photo to 50 KB Online | ExactSpec',
-  seoDescription: 'Resize a photo to a 50 KB target in your browser with no upload and no backend processing.',
+  seoTitle: 'Resize Photo to 50 KB: Free, No Upload',
+  seoDescription: 'Reduce your photo to under 50 KB, free, right in your browser. Nothing is uploaded.',
   h1: 'Resize Photo to 50 KB',
-  intro: 'Upload a JPG or PNG, adjust the crop and target size, and export a photo that fits the target KB range without leaving the browser.',
+  intro: 'Many online forms limit photo uploads to about 50 KB. Upload your JPG or PNG, and this tool adjusts the image until the file lands between 30 and 50 KB.',
 }
 ```
 

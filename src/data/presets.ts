@@ -480,7 +480,7 @@ export const PRESETS: ImagePreset[] = [
     ],
     minKB: 15,
     maxKB: 20,
-    published: true,
+    published: false,
     showAsButton: false,
   },
 ];
