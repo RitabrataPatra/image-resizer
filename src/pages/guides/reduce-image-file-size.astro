@@ -39,7 +39,7 @@ const pageDescription =
             <div>
               <h3 class="text-lg font-semibold text-slate-900">2. Crop unnecessary areas</h3>
               <p class="mt-2">
-                Cropping irrelevant areas can improve framing and reduce the image content that needs to be encoded. The amount the file size changes depends on the image; cropping does not guarantee a particular KB reduction.
+              Cropping removes parts of the image you don't need. This can reduce the pixel dimensions and file size, especially when a large portion of the original image is irrelevant to the upload.
               </p>
             </div>
             <div>
@@ -55,6 +55,9 @@ const pageDescription =
           <h2 class="text-2xl font-bold tracking-tight text-slate-900">KB and Pixels Are Not the Same Thing</h2>
           <p class="mt-3">
             Pixels describe an image’s digital dimensions; KB or MB describes its encoded file size. Changing dimensions can affect file size, but the two measurements are not interchangeable. Images with the same pixel dimensions can have different file sizes because of their format and compression, and images with similar file sizes can have different dimensions.
+          </p>
+          <p class="mt-3">
+            If an upload requirement specifies both a maximum file size and maximum dimensions, you need to meet both. For example, an upload might require an image to be under 100 KB and no larger than 600 × 800 pixels.
           </p>
           <p class="mt-3">
             <a href="/" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:text-slate-700">Open the ExactSpec image resizer</a>
@@ -85,7 +88,7 @@ const pageDescription =
             <li>Crop unnecessary areas while keeping the important subject or content.</li>
             <li>Set the file-size range to match the destination; ExactSpec chooses JPEG quality automatically.</li>
             <li>Check whether the destination requires a particular format before exporting.</li>
-            <li>Avoid reducing quality so much that text, faces, signatures, or other important details become unclear.</li>
+            
           </ul>
           <p class="mt-3">
             When clarity matters, reducing dimensions appropriately can be preferable to relying on extreme compression alone. Inspect the result either way.
@@ -142,10 +145,6 @@ const pageDescription =
             <div>
               <h3 class="text-lg font-semibold text-slate-900">Will reducing an image to a smaller file size reduce quality?</h3>
               <p class="mt-2">It can. Smaller dimensions reduce available detail, and stronger JPEG compression can cause artifacts or blur. Inspect the result and choose a size that meets the destination’s rules while keeping important details clear.</p>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-slate-900">What should I do if my image is still above the required size?</h3>
-              <p class="mt-2">Try reducing dimensions, cropping unnecessary areas, and adjusting the file-size range so the tool can use different JPEG compression. Review the output after each change and make sure it still meets the destination’s other requirements.</p>
             </div>
           </div>
         </section>
