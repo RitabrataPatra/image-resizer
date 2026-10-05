@@ -11,8 +11,13 @@ export interface ImagePreset {
   h1: string;
   intro: string;
   sourceUrl?: string;
+  sourceName?: string;
   lastVerified?: string;
   faqs: { q: string; a: string }[];
+  howToUse?: string[];
+  practicalTips?: string[];
+  limitations?: string;
+  relatedLinks?: { label: string; href: string }[];
   width?: number;
   height?: number;
   minKB: number;
@@ -32,28 +37,49 @@ export const PRESETS: ImagePreset[] = [
     title: 'Photo 50 KB',
     seoTitle: 'Resize Photo to 50 KB: Free, No Upload',
     seoDescription:
-      'Reduce your photo to under 50 KB, free, right in your browser. Nothing is uploaded.',
+      'Work toward a 30–50 KB photo target in your browser. Check the destination’s file-size requirements and review the JPG output.',
     description:
-      'Resize a photo to a 50 KB target in your browser with clean crop, quality, and export controls.',
+      'Use this 30–50 KB preset when a form or service gives you a photo file-size limit in this range. Check that destination’s requirements before exporting.',
     h1: 'Resize Photo to 50 KB',
     intro:
-      'Many online forms limit photo uploads to about 50 KB. Upload your JPG or PNG, and this tool adjusts the image until the file lands between 30 and 50 KB. Everything runs in your browser, so your photo is never uploaded.',
+      'This ExactSpec preset starts with a 30–50 KB target range. Use it when a particular form, portal, or service gives you a file-size limit that fits; its requirements may differ. File size in KB, pixel dimensions, and JPEG quality are related but distinct.',
     faqs: [
       {
-        q: 'Why is my photo still above 50 KB?',
-        a: 'Large or detailed photos may need smaller dimensions as well as lower quality. Enter a smaller width and height, or crop closer to the face, then export again.',
+        q: 'Why is my image still above 50 KB?',
+        a: 'The tool selects JPEG quality to work toward the range, but some images may not reach it at their current dimensions. Try smaller pixel dimensions or adjust the target range only if the destination allows it.',
       },
       {
-        q: 'Will my photo look blurry?',
-        a: 'Compressing to 50 KB removes some detail, but ID-style photos often stay clear enough. If the result looks too soft and your form allows it, raise the maximum size a little.',
+        q: 'Does reducing dimensions lower file size?',
+        a: 'Fewer pixels can reduce the amount of image data, though the result also depends on the image content and JPEG compression.',
       },
       {
-        q: 'Can I use a different size?',
-        a: 'Yes. Change the minimum and maximum size or the dimensions in the tool, and export again.',
+        q: 'Will compressing a photo reduce its quality?',
+        a: 'JPEG compression is lossy. A smaller file may have less visible detail, so inspect the output and avoid reducing the file more than the destination requires.',
       },
       {
-        q: 'Does it work on my phone?',
-        a: "Yes. Choose a photo from your gallery or take one with your camera. Everything runs in your phone's browser.",
+        q: 'Is 50 KB required for every application?',
+        a: 'No. This is an ExactSpec preset target, not a universal requirement. Follow the current file-size and image instructions for your specific destination.',
+      },
+    ],
+    howToUse: [
+      'Upload a JPG or PNG image.',
+      'Crop the image if needed, then review the output preview and file size.',
+      'If the file is too large, try reducing its pixel dimensions. ExactSpec selects JPEG quality automatically.',
+      'Download the resulting JPG and check it against the destination’s requirements.',
+    ],
+    practicalTips: [
+      'Keep the details important to your use case visible in the crop.',
+      'Avoid shrinking dimensions or file size more than necessary; both can reduce visible detail.',
+      'Cropping away unused image area can change the output, but does not guarantee a particular KB value.',
+    ],
+    limitations:
+      'ExactSpec works toward the selected range but cannot guarantee that every source image will fit while retaining the quality you want. Always inspect the final JPG.',
+    relatedLinks: [
+      { label: 'Home image resizer', href: '/' },
+      { label: 'All published size presets', href: '/all-sizes/' },
+      {
+        label: 'Passport-size photo preset',
+        href: '/passport-size-photo-35x45-mm/',
       },
     ],
     minKB: 30,
@@ -68,22 +94,55 @@ export const PRESETS: ImagePreset[] = [
     title: 'Passport Size Photo 35 x 45 mm',
     seoTitle: 'Passport Size Photo 35 x 45 mm',
     seoDescription:
-      'Resize an Indian passport photo to 35x45 mm dimensions in your browser without uploading files.',
+      'Resize a portrait photo to 35 × 45 mm (3.5 × 4.5 cm) with configurable pixel and file-size targets. Check your application’s current photo rules.',
     description:
-      'Resize a passport-style photo to the standard 35x45 mm format for Indian applications and ID submissions.',
+      'A starting configuration for a 35 × 45 mm portrait crop. Photo requirements vary by application and submission context; check the current instructions for your destination.',
     h1: 'Resize Passport Size Photo 35 x 45 mm',
     intro:
-      'Use this preset for passport, visa, and ID-style photo submissions that need a standard 35x45 mm print size with a clean crop and crisp export.',
+      'This preset helps resize a portrait photo to 35 × 45 mm (3.5 × 4.5 cm). Passport Seva’s current instructions specify a 4.5 cm length × 3.5 cm width colour photograph for certain submission or collection centres, while photographs are not required for applications submitted at PSK/POPSK in that instruction context. Check the current requirements for your specific application.',
     faqs: [
       {
-        q: 'What is the standard passport photo size?',
-        a: 'This preset follows the common 35x45 mm passport-portrait format used for Indian documentation and application images.',
+        q: 'What does 35 × 45 mm mean?',
+        a: 'It describes physical dimensions: 35 mm wide by 45 mm high. Whether that size is appropriate depends on the destination’s instructions.',
       },
       {
-        q: 'Can I crop the face more tightly?',
-        a: 'Yes. Keep the subject centered and crop before exporting, then use the target dimensions to match the required final output.',
+        q: 'How do 35 × 45 mm and pixels relate?',
+        a: 'Millimetres describe physical size, while pixels describe digital dimensions. DPI provides a relationship between them. At 300 DPI, 35 × 45 mm converts to approximately 413 × 531 pixels after rounding; these are this preset’s starting values, not an official pixel specification.',
+      },
+      {
+        q: 'Does 35 × 45 mm meet every passport or visa requirement?',
+        a: 'No. Requirements vary by country, organization, application, and submission location. The crop ratio alone does not establish the required face size, position, background, or expression. Check the current rules for your destination.',
+      },
+      {
+        q: 'Can I adjust the crop?',
+        a: 'Yes. The preset starts with a portrait crop ratio, and you can reposition or adjust the crop window. The ratio does not automatically ensure that the portrait follows a particular application’s framing rules.',
+      },
+      {
+        q: 'Does 300 DPI guarantee that my application will accept the photo?',
+        a: 'No. DPI is used with physical-size inputs to calculate pixel dimensions in ExactSpec. The exported JPG is not guaranteed to contain 300-DPI metadata, and acceptance depends on the destination’s full requirements.',
       },
     ],
+    howToUse: [
+      'Check whether your destination asks for a 35 × 45 mm photo and note any separate framing or file-size rules.',
+      'Upload a JPG or PNG and adjust the portrait crop to suit those instructions.',
+      'Review the pixel dimensions and 30–80 KB target, changing them if the destination specifies different values.',
+      'Download the JPG and verify it against the current destination requirements.',
+    ],
+    practicalTips: [
+      '35 × 45 mm describes physical size; pixels describe the digital image size. DPI relates the two and is used here to calculate pixels.',
+      'The 35:45 ratio controls crop shape only. It does not set the required face size, head position, background, or expression.',
+      'Use the preset’s 413 × 531 px and 300 DPI values as a starting configuration, not as official Passport Seva pixel or DPI requirements.',
+    ],
+    limitations:
+      'The preset does not guarantee compliance or acceptance. Passport Seva instructions vary by submission context, and other countries, organizations, visas, and applications may set different requirements. ExactSpec uses physical-size and DPI inputs to calculate pixel dimensions; it does not guarantee DPI metadata in the exported JPG.',
+    relatedLinks: [
+      { label: 'Home image resizer', href: '/' },
+      { label: 'All published size presets', href: '/all-sizes/' },
+      { label: 'Photo 50 KB preset', href: '/photo-50-kb/' },
+    ],
+    sourceUrl:
+      'https://passportindia.gov.in/pdf/ApplicationformInstructionBooklet-V3.0.pdf',
+    sourceName: 'Passport Seva application instruction booklet',
     width: 413,
     height: 531,
     minKB: 30,
@@ -434,21 +493,50 @@ export const PRESETS: ImagePreset[] = [
     title: 'Signature 10 KB',
     seoTitle: 'Resize Signature to 10 KB Online',
     seoDescription:
-      'Resize a signature image to a 10 KB target in your browser with a quick crop and export flow.',
+      'Work toward an 8–10 KB signature image target. Crop excess whitespace, check stroke detail, and follow your destination’s requirements.',
     description:
-      'Resize a signature image to a 10 KB target in your browser while keeping the signature legible and centered.',
+      'Use this 8–10 KB ExactSpec preset as a starting point when a destination gives you a signature file-size limit. It is not a universal requirement.',
     h1: 'Resize Signature to 10 KB',
     intro:
-      'Upload a signature scan or photo, crop it to the target shape, and export a smaller signature image that stays within the expected KB range.',
+      'This ExactSpec preset starts with an 8–10 KB target range for a signature image. Crop carefully to remove excess whitespace while keeping the strokes readable, and check the limit specified by your destination.',
     faqs: [
       {
-        q: 'Does this work for scanned signatures?',
-        a: 'Yes. You can crop and compress a scanned signature directly in the browser until it falls within the target range.',
+        q: 'How do I reduce a signature image to 10 KB?',
+        a: 'Upload a JPG or PNG, crop away unnecessary margins without cutting into the strokes, then inspect the output size and preview. ExactSpec chooses JPEG quality automatically, but cannot guarantee every image will reach the target.',
       },
       {
-        q: 'Can I make the output more legible?',
-        a: 'Yes. Use the crop and quality controls to keep the signature centered and avoid losing stroke detail.',
+        q: 'Why does my signature look blurry after compression?',
+        a: 'JPEG compression can soften thin strokes, especially at very small file sizes. Try a less aggressive file-size target or larger pixel dimensions if the destination allows it, then compare the preview.',
       },
+      {
+        q: 'Should I crop empty space around my signature?',
+        a: 'Usually, removing unnecessary whitespace gives the signature a more useful frame. Keep a small margin and do not crop through any strokes.',
+      },
+      {
+        q: 'Does the tool preserve transparent backgrounds?',
+        a: 'No. ExactSpec exports JPG files, so transparent areas in a PNG input are rendered against a white background.',
+      },
+      {
+        q: 'Is 10 KB required for every application?',
+        a: 'No. The 8–10 KB range is this preset’s target, not a universal requirement. Follow the current file-size and format rules for your destination.',
+      },
+    ],
+    howToUse: [
+      'Upload a JPG or PNG scan or photo of the signature.',
+      'Crop excess whitespace while keeping every stroke intact and the signature centered.',
+      'Review the output preview and file size before downloading the JPG.',
+      'If the result misses your destination’s limit or loses detail, adjust the dimensions or target range if allowed, then review it again.',
+    ],
+    practicalTips: [
+      'Leave a small margin around the signature rather than cutting close to the strokes.',
+      'Inspect thin lines at a useful zoom level; stronger compression can make them less distinct.',
+      'Check the downloaded JPG and the destination’s format and size requirements.',
+    ],
+    limitations:
+      'The 8–10 KB range is a configurable preset target, not an application standard. JPEG compression may reduce stroke detail, and ExactSpec cannot guarantee that every source image will meet a requested range while remaining legible.',
+    relatedLinks: [
+      { label: 'Home image resizer', href: '/' },
+      { label: 'All published size presets', href: '/all-sizes/' },
     ],
     minKB: 8,
     maxKB: 10,

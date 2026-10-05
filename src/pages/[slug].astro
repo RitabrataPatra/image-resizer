@@ -93,7 +93,7 @@ const specRows = [
       </div>
       {hasVerifiedSource && preset.sourceUrl && (
         <p class="mt-5 text-sm text-slate-600">
-          Source: <a href={preset.sourceUrl} class="font-medium text-slate-900 underline underline-offset-4" target="_blank" rel="noreferrer">{preset.sourceUrl}</a>
+          Reference: <a href={preset.sourceUrl} class="font-medium text-slate-900 underline underline-offset-4" target="_blank" rel="noreferrer">{preset.sourceName ?? preset.sourceUrl}</a>
         </p>
       )}
       {hasVerifiedSource && preset.lastVerified && (
@@ -102,6 +102,31 @@ const specRows = [
         </p>
       )}
     </section>
+
+    {preset.howToUse && preset.howToUse.length > 0 && (
+      <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <h2 class="text-2xl font-bold tracking-tight text-slate-900">How to use this preset</h2>
+        <ol class="mt-5 list-decimal space-y-3 pl-5 text-slate-700">
+          {preset.howToUse.map((step) => <li>{step}</li>)}
+        </ol>
+      </section>
+    )}
+
+    {preset.practicalTips && preset.practicalTips.length > 0 && (
+      <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <h2 class="text-2xl font-bold tracking-tight text-slate-900">Practical tips</h2>
+        <ul class="mt-5 list-disc space-y-3 pl-5 text-slate-700">
+          {preset.practicalTips.map((tip) => <li>{tip}</li>)}
+        </ul>
+      </section>
+    )}
+
+    {preset.limitations && (
+      <section class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-6 sm:p-8">
+        <h2 class="text-xl font-bold tracking-tight text-slate-900">Important limitations</h2>
+        <p class="mt-3 text-slate-700">{preset.limitations}</p>
+      </section>
+    )}
 
     <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
       <h2 class="text-2xl font-bold tracking-tight text-slate-900">FAQs</h2>
@@ -114,5 +139,20 @@ const specRows = [
         ))}
       </div>
     </section>
+
+    {preset.relatedLinks && preset.relatedLinks.length > 0 && (
+      <nav aria-label="Related tools and pages" class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <h2 class="text-xl font-bold tracking-tight text-slate-900">Related tools and pages</h2>
+        <ul class="mt-4 flex flex-wrap gap-x-5 gap-y-3">
+          {preset.relatedLinks.map((link) => (
+            <li>
+              <a href={link.href} class="font-medium text-slate-800 underline decoration-slate-300 underline-offset-4 hover:text-slate-900">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )}
   </main>
 </Layout>
