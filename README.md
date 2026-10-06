@@ -139,6 +139,4 @@ No Vercel-specific configuration file is present; the build settings are defined
 
 ## License
 
-## License
-
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
