@@ -18,10 +18,6 @@ import { RequirementsForm, TargetSpecs } from './components/RequirementsForm';
 import { CropWorkspace } from './components/CropWorkspace';
 import { ResultCard } from './components/ResultCard';
 
-const notifySuccessfulDownload = () => {
-  window.dispatchEvent(new Event('exactspec:successful-download'));
-};
-
 const DEFAULT_PRESET = PUBLISHED_PRESETS[0] ?? PRESETS[0];
 
 const getPresetBySlug = (presetSlug?: string) =>
@@ -327,7 +323,6 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
                     )
                   }
                   onRotate={() => setRotationDeg((prev) => (prev + 90) % 360)}
-                  onSuccessfulDownload={notifySuccessfulDownload}
                 />
 
                 <ResultCard
@@ -337,7 +332,6 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
                   minKB={parsedSpecs.minKB}
                   maxKB={parsedSpecs.maxKB}
                   onAutoScaleDimensions={handleAutoScaleDimensions}
-                  onSuccessfulDownload={notifySuccessfulDownload}
                 />
               </>
             ) : (

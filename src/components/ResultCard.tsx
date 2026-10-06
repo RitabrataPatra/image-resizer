@@ -19,7 +19,6 @@ interface ResultCardProps {
   minKB: number;
   maxKB: number;
   onAutoScaleDimensions?: () => void;
-  onSuccessfulDownload: () => void;
 }
 
 export const ResultCard: React.FC<ResultCardProps> = ({
@@ -29,7 +28,6 @@ export const ResultCard: React.FC<ResultCardProps> = ({
   minKB,
   maxKB,
   onAutoScaleDimensions,
-  onSuccessfulDownload,
 }) => {
   const handleDownload = () => {
     if (!result) return;
@@ -37,12 +35,8 @@ export const ResultCard: React.FC<ResultCardProps> = ({
     link.href = result.previewUrl;
     link.download = result.fileName;
     document.body.appendChild(link);
-    try {
-      link.click();
-    } finally {
-      document.body.removeChild(link);
-    }
-    onSuccessfulDownload();
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
