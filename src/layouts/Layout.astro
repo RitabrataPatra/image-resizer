@@ -7,6 +7,7 @@ const {
   title = `${TOOL_NAME}: Resize Any Image to Any Size or KB`,
   description = 'Resize any image to a custom size or KB target in your browser for free. Images never leave your device.',
   robots,
+  includeCanonical = true,
   structuredData,
 } = Astro.props;
 const pathname = Astro.url.pathname.endsWith('/')
@@ -33,7 +34,7 @@ const canonicalUrl = new URL(pathname, SITE_URL).toString();
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={`${SITE_URL}/social-preview.png`} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href={canonicalUrl} />
+    {includeCanonical && <link rel="canonical" href={canonicalUrl} />}
     <title>{title}</title>
     {structuredData && <StructuredData data={structuredData} />}
   </head>

@@ -63,6 +63,7 @@ for (const filePath of findHtmlFiles(outputDirectory)) {
   const html = readFileSync(filePath, 'utf8');
   const relativePath = relative(outputDirectory, filePath);
   const expectedUrl = expectedUrlForFile(filePath);
+  const isNotFoundPage = relativePath === '404.html';
   const canonicalTags = [...html.matchAll(/<link\b[^>]*>/gi)]
     .map(([tag]) => tag)
     .filter((tag) => getAttribute(tag, 'rel')?.toLowerCase() === 'canonical');
@@ -76,11 +77,19 @@ for (const filePath of findHtmlFiles(outputDirectory)) {
     ? getAttribute(openGraphUrlTags[0], 'content')
     : undefined;
 
-  if (canonical !== expectedUrl || openGraphUrl !== expectedUrl) {
+  if (isNotFoundPage ? canonicalTags.length !== 0 : canonical !== expectedUrl) {
     failures.push(
-      `${relativePath}: expected canonical and og:url ` +
-        `${expectedUrl}; received canonical ${canonical ?? 'missing/duplicate'} ` +
-        `and og:url ${openGraphUrl ?? 'missing/duplicate'}`
+      isNotFoundPage
+        ? `${relativePath}: expected no canonical; received ${canonical ?? 'canonical tag(s)'}`
+        : `${relativePath}: expected canonical ${expectedUrl}; ` +
+          `received ${canonical ?? 'missing/duplicate'}`
+    );
+  }
+
+  if (openGraphUrl !== expectedUrl) {
+    failures.push(
+      `${relativePath}: expected exactly one og:url ${expectedUrl}; ` +
+        `received ${openGraphUrl ?? 'missing/duplicate'}`
     );
   }
 

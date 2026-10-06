@@ -428,7 +428,7 @@ export const PRESETS: ImagePreset[] = [
     minKB: 15,
     maxKB: 20,
     published: false,
-    showAsButton: true,
+    showAsButton: false,
   },
   {
     slug: 'photo-100-kb',
@@ -484,7 +484,7 @@ export const PRESETS: ImagePreset[] = [
     minKB: 160,
     maxKB: 200,
     published: false,
-    showAsButton: true,
+    showAsButton: false,
   },
   {
     slug: 'signature-10-kb',
