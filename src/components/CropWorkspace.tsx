@@ -32,6 +32,7 @@ interface CropWorkspaceProps {
   onChangeCrop: (nextCrop: CropRect) => void;
   onToggleAspectLock: (nextLocked?: boolean) => void;
   onRotate: () => void;
+  onSuccessfulDownload: () => void;
 }
 
 type HandleMode =
@@ -60,6 +61,7 @@ export const CropWorkspace: React.FC<CropWorkspaceProps> = ({
   onChangeCrop,
   onToggleAspectLock,
   onRotate,
+  onSuccessfulDownload,
 }) => {
   const stageRef = useRef<HTMLDivElement>(null);
   const windowRef = useRef<HTMLDivElement>(null);
@@ -474,8 +476,12 @@ export const CropWorkspace: React.FC<CropWorkspaceProps> = ({
     link.href = processedOutput.previewUrl;
     link.download = processedOutput.fileName;
     document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      link.click();
+    } finally {
+      document.body.removeChild(link);
+    }
+    onSuccessfulDownload();
   };
 
   // Exact CSS positioning of the image relative to the target window

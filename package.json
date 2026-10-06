@@ -12,7 +12,7 @@
     "test": "tsx --test src/utils/sizeTargeting.test.ts"
   },
   "dependencies": {
-    "@astrojs/react": "^4.3.0",
+    "@astrojs/react": "^6.0.6",
     "@astrojs/sitemap": "^3.4.1",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.5",
