@@ -40,6 +40,9 @@ const noindexPagePaths = new Set(['contact', 'privacy', 'terms', '404.html']);
 export default defineConfig({
   site: SITE_URL,
   output: 'static',
+  webAnalytics: {
+      enabled: true, // set to false when using @vercel/analytics@1.4.0
+    },
   integrations: [
     react(),
     sitemap({

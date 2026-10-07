@@ -2,6 +2,7 @@
 import '../index.css';
 import { BRAND_NAME, TOOL_NAME, SITE_URL } from '../site';
 import StructuredData from '../components/StructuredData.astro';
+import Analytics from '@vercel/analytics/astro';
 
 const {
   title = `${TOOL_NAME}: Resize Any Image to Any Size or KB`,
@@ -37,6 +38,7 @@ const canonicalUrl = new URL(pathname, SITE_URL).toString();
     {includeCanonical && <link rel="canonical" href={canonicalUrl} />}
     <title>{title}</title>
     {structuredData && <StructuredData data={structuredData} />}
+     <Analytics />
   </head>
   <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
     <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur-md">
