@@ -5,7 +5,11 @@ import {
   distanceToRange,
 } from './sizeTargeting.ts';
 import { cmToPixels, getCenteredCropForAspect } from './dimensions.ts';
-import { QUICK_PRESETS, PRESETS } from '../data/presets';
+import {
+  QUICK_PRESETS,
+  PRESETS,
+  PUBLISHED_PRESETS,
+} from '../data/presets';
 
 interface MockBlob {
   size: number;
@@ -39,6 +43,8 @@ describe('findJpegQualityForSizeRange', () => {
       result.sizeKB >= 20 && result.sizeKB <= 50,
       `Expected sizeKB ${result.sizeKB} to be between 20 and 50`
     );
+    assert.equal(result.sizeBytes, result.blob.size);
+    assert.equal(result.sizeKB, Number((result.blob.size / 1024).toFixed(2)));
     // Should pick a high quality near the upper part of the 20-50 KB range
     assert.ok(result.sizeKB > 35, `Expected sizeKB ${result.sizeKB} to be near top of range`);
   });
@@ -145,6 +151,56 @@ describe('dimension & range utilities', () => {
     );
   });
 
+  it('publishes unique preset routes for each requested supported preset', () => {
+    const slugs = PRESETS.map((preset) => preset.slug);
+    assert.equal(new Set(slugs).size, slugs.length, 'Preset slugs must be unique');
+
+    const publishedSlugs = new Set(
+      PUBLISHED_PRESETS.map((preset) => preset.slug)
+    );
+    for (const slug of [
+      'photo-20-kb',
+      'photo-50-kb',
+      'photo-100-kb',
+      'photo-200-kb',
+      'passport-size-photo-35x45-mm',
+      'facebook-profile-photo-square',
+    ]) {
+      assert.ok(publishedSlugs.has(slug), `Expected published route /${slug}/`);
+    }
+
+    assert.ok(!publishedSlugs.has('pan-card-photo-35x45-mm'));
+  });
+
+  it('keeps photo file-size preset targets in the existing KB ranges', () => {
+    const expectedRanges: Record<string, [number, number]> = {
+      'photo-20-kb': [15, 20],
+      'photo-50-kb': [30, 50],
+      'photo-100-kb': [80, 100],
+      'photo-200-kb': [160, 200],
+    };
+
+    for (const [slug, [minKB, maxKB]] of Object.entries(expectedRanges)) {
+      const preset = PRESETS.find((item) => item.slug === slug);
+      assert.ok(preset, `Expected preset ${slug}`);
+      assert.equal(preset.minKB, minKB);
+      assert.equal(preset.maxKB, maxKB);
+    }
+  });
+
+  it('configures the Facebook profile preset as a square ExactSpec starting point', () => {
+    const preset = PRESETS.find(
+      (item) => item.slug === 'facebook-profile-photo-square'
+    );
+    assert.ok(preset);
+    assert.equal(preset.width, 320);
+    assert.equal(preset.height, 320);
+    assert.equal(preset.width / preset.height, 1);
+    assert.equal(preset.minKB, 30);
+    assert.equal(preset.maxKB, 300);
+    assert.match(preset.limitations ?? '', /not a guarantee of acceptance/i);
+  });
+
   it('keeps pixel dimensions only for presets that define them', () => {
     const fileSizeOnlySlugs = [
       'photo-50-kb',
@@ -178,5 +234,6 @@ describe('dimension & range utilities', () => {
     assert.equal(passportPreset.height, 531);
     assert.equal(passportPreset.widthCm, 3.5);
     assert.equal(passportPreset.heightCm, 4.5);
+    assert.equal(passportPreset.dpi, 300);
   });
 });
