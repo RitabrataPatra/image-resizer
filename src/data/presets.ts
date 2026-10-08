@@ -154,6 +154,56 @@ export const PRESETS: ImagePreset[] = [
     showAsButton: true,
   },
   {
+    slug: 'facebook-profile-photo-square',
+    type: 'photo',
+    name: 'Facebook Profile Photo (Square)',
+    title: 'Facebook Profile Photo Square Crop',
+    seoTitle: 'Resize Image for Facebook Profile Online',
+    seoDescription:
+      'Resize an image with ExactSpec’s square 320 × 320 px starting preset for a Facebook profile. Check current guidance; these are not universal platform requirements.',
+    description:
+      'A square starting crop for a profile photo. Platform display and upload guidance can change; check the current requirements for your use.',
+    h1: 'Resize Image for a Facebook Profile',
+    intro:
+      'This preset starts with a 320 × 320 px square crop. It is an ExactSpec starting point, not a universal Facebook requirement. Review Facebook’s current guidance for the placement where you plan to use the image.',
+    faqs: [
+      {
+        q: 'Is 320 × 320 px required for every Facebook profile photo?',
+        a: 'No. This is a square starting size in ExactSpec, not a universal platform requirement. Check current Facebook guidance for your intended placement.',
+      },
+      {
+        q: 'Can I change the crop?',
+        a: 'Yes. Adjust the crop in the resizer while keeping the square aspect ratio locked, or change the dimensions if your destination calls for something else.',
+      },
+      {
+        q: 'Is the 30–300 KB range a Facebook limit?',
+        a: 'No. It is only this preset’s adjustable starting range for JPEG output. Facebook’s current upload limits may differ.',
+      },
+    ],
+    howToUse: [
+      'Upload a JPG or PNG image.',
+      'Position the square crop around the part of the photo you want to use.',
+      'Review the 320 × 320 px output and actual file size, adjusting the values if needed.',
+      'Download the JPG and check it against current Facebook guidance for your intended placement.',
+    ],
+    limitations:
+      'Facebook display sizes and upload requirements may vary by placement and change over time. The square dimensions and file-size range here are ExactSpec starting values, not a guarantee of acceptance.',
+    relatedLinks: [
+      { label: 'All published size presets', href: '/all-sizes/' },
+      { label: 'Photo 50 KB preset', href: '/photo-50-kb/' },
+      {
+        label: 'Passport-size photo preset',
+        href: '/passport-size-photo-35x45-mm/',
+      },
+    ],
+    width: 320,
+    height: 320,
+    minKB: 30,
+    maxKB: 300,
+    published: true,
+    showAsButton: false,
+  },
+  {
     slug: 'government-exam-photo-50-kb',
     type: 'photo',
     name: 'Government Exam Photo 50 KB',
@@ -407,27 +457,44 @@ export const PRESETS: ImagePreset[] = [
     type: 'photo',
     name: 'Photo 20 KB',
     title: 'Photo 20 KB',
-    seoTitle: 'Photo 20 KB Draft',
+    seoTitle: 'Resize Photo to 20 KB Online Free',
     seoDescription:
-      'Draft photo preset for tighter 20 KB output requirements. This page is intentionally unpublished until the source guidance is verified.',
+      'Resize a photo toward a 15–20 KB JPG target. Check the actual output size and adjust dimensions if needed; follow your application’s file-size rules.',
     description:
-      'Draft photo preset for tighter 20 KB output requirements. This page is intentionally unpublished until the source guidance is verified.',
-    h1: 'Photo 20 KB',
+      'Use this ExactSpec starting range when a destination allows a photo file size of up to 20 KB. Check the destination’s own requirements.',
+    h1: 'Resize Photo to 20 KB',
     intro:
-      'This draft preset is intended for lower-size photo submissions where the final image must stay near 20 KB while keeping the subject well framed.',
+      'Start with ExactSpec’s 15–20 KB JPG target. Upload and crop your photo, then check the generated file’s actual size before downloading. The target is a starting point; use the limits specified by the application or website receiving your image.',
     faqs: [
       {
-        q: 'Why is this preset still a draft?',
-        a: 'The exact width, height, and output range should be checked against the original guidance before it is published live.',
+        q: 'How do I use the 20 KB photo preset?',
+        a: 'Upload a JPG or PNG, adjust the crop if needed, and review the generated JPG’s displayed size in KB and bytes before downloading.',
       },
       {
-        q: 'Can I still use the browser tool with this target?',
-        a: 'Yes. The resizer itself is unchanged, and the draft preset simply keeps the page out of the published sitemap until verified.',
+        q: 'What if the output is not between 15 and 20 KB?',
+        a: 'ExactSpec reports when the encoded image misses the selected range. If it is too large, try smaller dimensions; if it is below the minimum, try larger dimensions. Change the target only if the destination permits it, then check the new output size.',
       },
+      {
+        q: 'Is 20 KB the right limit for every application?',
+        a: 'No. Application and website limits vary. Check the instructions for the destination and use its specified file-size and image requirements.',
+      },
+    ],
+    howToUse: [
+      'Upload a JPG or PNG and position the crop as needed.',
+      'Let ExactSpec create the JPG using the 15–20 KB starting range.',
+      'Check the result’s displayed KB value and exact byte count before downloading.',
+      'If it misses the range, adjust dimensions or the target only as allowed by the destination, then review the output again.',
+    ],
+    limitations:
+      'The 15–20 KB range is an ExactSpec starting target, not a universal upload requirement. JPEG encoding may not reach it for every image at the chosen dimensions; inspect the measured output size and follow your destination’s rules.',
+    relatedLinks: [
+      { label: 'All published size presets', href: '/all-sizes/' },
+      { label: 'Photo 50 KB preset', href: '/photo-50-kb/' },
+      { label: 'Photo 100 KB preset', href: '/photo-100-kb/' },
     ],
     minKB: 15,
     maxKB: 20,
-    published: false,
+    published: true,
     showAsButton: false,
   },
   {
@@ -435,27 +502,44 @@ export const PRESETS: ImagePreset[] = [
     type: 'photo',
     name: 'Photo 100 KB',
     title: 'Photo 100 KB',
-    seoTitle: 'Photo 100 KB Draft',
+    seoTitle: 'Resize Photo to 100 KB Online Free',
     seoDescription:
-      'Draft photo preset for 100 KB output. This page is intentionally unpublished until the source guidance is verified.',
+      'Resize a photo toward an 80–100 KB JPG target. Check the actual output size and adjust dimensions if needed; follow your application’s file-size rules.',
     description:
-      'Draft photo preset for a 100 KB photo target. This page is intentionally unpublished until the source guidance is verified.',
-    h1: 'Photo 100 KB',
+      'Use this ExactSpec starting range when a destination allows a photo file size of up to 100 KB. Check the destination’s own requirements.',
+    h1: 'Resize Photo to 100 KB',
     intro:
-      'This draft preset is useful for moderate-size photo uploads that need a larger file ceiling while still keeping the result compact and clear.',
+      'Start with ExactSpec’s 80–100 KB JPG target. Upload and crop your photo, then check the generated file’s actual size before downloading. Use the file-size and image limits specified by the application or website receiving your image.',
     faqs: [
       {
-        q: 'When would I use a 100 KB target?',
-        a: 'Use it when the portal allows a larger output file while still keeping the image comfortably within a compact size budget.',
+        q: 'How do I use the 100 KB photo preset?',
+        a: 'Upload a JPG or PNG, adjust the crop if needed, and review the generated JPG’s displayed size in KB and bytes before downloading.',
       },
       {
-        q: 'Is this page visible in the sitemap?',
-        a: 'No. It is a draft and intentionally excluded from the published site until it is verified.',
+        q: 'What if the output is not between 80 and 100 KB?',
+        a: 'ExactSpec reports when the encoded image misses the selected range. If it is too large, try smaller dimensions; if it is below the minimum, try larger dimensions. Change the target only if the destination permits it, then check the new output size.',
       },
+      {
+        q: 'Is 100 KB the right limit for every application?',
+        a: 'No. Application and website limits vary. Check the instructions for the destination and use its specified file-size and image requirements.',
+      },
+    ],
+    howToUse: [
+      'Upload a JPG or PNG and position the crop as needed.',
+      'Let ExactSpec create the JPG using the 80–100 KB starting range.',
+      'Check the result’s displayed KB value and exact byte count before downloading.',
+      'If it misses the range, adjust dimensions or the target only as allowed by the destination, then review the output again.',
+    ],
+    limitations:
+      'The 80–100 KB range is an ExactSpec starting target, not a universal upload requirement. JPEG encoding may not reach it for every image at the chosen dimensions; inspect the measured output size and follow your destination’s rules.',
+    relatedLinks: [
+      { label: 'All published size presets', href: '/all-sizes/' },
+      { label: 'Photo 50 KB preset', href: '/photo-50-kb/' },
+      { label: 'Photo 200 KB preset', href: '/photo-200-kb/' },
     ],
     minKB: 80,
     maxKB: 100,
-    published: false,
+    published: true,
     showAsButton: false,
   },
   {
@@ -463,27 +547,44 @@ export const PRESETS: ImagePreset[] = [
     type: 'photo',
     name: 'Photo 200 KB',
     title: 'Photo 200 KB',
-    seoTitle: 'Photo 200 KB Draft',
+    seoTitle: 'Resize Photo to 200 KB Online Free',
     seoDescription:
-      'Draft photo preset for 200 KB output. This page is intentionally unpublished until the source guidance is verified.',
+      'Resize a photo toward a 160–200 KB JPG target. Check the actual output size and adjust dimensions if needed; follow your application’s file-size rules.',
     description:
-      'Draft photo preset for a 200 KB photo target. This page is intentionally unpublished until the source guidance is verified.',
-    h1: 'Photo 200 KB',
+      'Use this ExactSpec starting range when a destination allows a photo file size of up to 200 KB. Check the destination’s own requirements.',
+    h1: 'Resize Photo to 200 KB',
     intro:
-      'This draft preset supports larger photo submissions where the file must remain reasonably compact but still deliver more detail and texture.',
+      'Start with ExactSpec’s 160–200 KB JPG target. Upload and crop your photo, then check the generated file’s actual size before downloading. Use the file-size and image limits specified by the application or website receiving your image.',
     faqs: [
       {
-        q: 'Why keep a 200 KB variant separate?',
-        a: 'Larger file ceilings often require different crop and quality settings, and the draft keeps it isolated until the correct guidance is confirmed.',
+        q: 'How do I use the 200 KB photo preset?',
+        a: 'Upload a JPG or PNG, adjust the crop if needed, and review the generated JPG’s displayed size in KB and bytes before downloading.',
       },
       {
-        q: 'Can the tool still process this target?',
-        a: 'Yes. The tool remains the same; this page is only excluded from the published site until it is validated.',
+        q: 'What if the output is not between 160 and 200 KB?',
+        a: 'ExactSpec reports when the encoded image misses the selected range. If it is too large, try smaller dimensions; if it is below the minimum, try larger dimensions. Change the target only if the destination permits it, then check the new output size.',
       },
+      {
+        q: 'Is 200 KB the right limit for every application?',
+        a: 'No. Application and website limits vary. Check the instructions for the destination and use its specified file-size and image requirements.',
+      },
+    ],
+    howToUse: [
+      'Upload a JPG or PNG and position the crop as needed.',
+      'Let ExactSpec create the JPG using the 160–200 KB starting range.',
+      'Check the result’s displayed KB value and exact byte count before downloading.',
+      'If it misses the range, adjust dimensions or the target only as allowed by the destination, then review the output again.',
+    ],
+    limitations:
+      'The 160–200 KB range is an ExactSpec starting target, not a universal upload requirement. JPEG encoding may not reach it for every image at the chosen dimensions; inspect the measured output size and follow your destination’s rules.',
+    relatedLinks: [
+      { label: 'All published size presets', href: '/all-sizes/' },
+      { label: 'Photo 100 KB preset', href: '/photo-100-kb/' },
+      { label: 'Facebook profile photo square preset', href: '/facebook-profile-photo-square/' },
     ],
     minKB: 160,
     maxKB: 200,
-    published: false,
+    published: true,
     showAsButton: false,
   },
   {
