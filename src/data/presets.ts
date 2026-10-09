@@ -186,6 +186,9 @@ export const PRESETS: ImagePreset[] = [
       'Review the 320 × 320 px output and actual file size, adjusting the values if needed.',
       'Download the JPG and check it against current Facebook guidance for your intended placement.',
     ],
+    practicalTips: [
+      'Keep important content away from the edges so it remains visible if the image is cropped in the placement where you use it. Check Facebook’s current guidance for that placement.',
+    ],
     limitations:
       'Facebook display sizes and upload requirements may vary by placement and change over time. The square dimensions and file-size range here are ExactSpec starting values, not a guarantee of acceptance.',
     relatedLinks: [
@@ -485,6 +488,10 @@ export const PRESETS: ImagePreset[] = [
       'Check the result’s displayed KB value and exact byte count before downloading.',
       'If it misses the range, adjust dimensions or the target only as allowed by the destination, then review the output again.',
     ],
+    practicalTips: [
+      'Because this preset starts with a lower file-size range, inspect fine details such as text and facial features in the output before using it.',
+      'If your destination sets only a maximum of 20 KB and the result is below 15 KB, check whether it is still acceptable rather than increasing dimensions just to meet this preset’s minimum.',
+    ],
     limitations:
       'The 15–20 KB range is an ExactSpec starting target, not a universal upload requirement. JPEG encoding may not reach it for every image at the chosen dimensions; inspect the measured output size and follow your destination’s rules.',
     relatedLinks: [
@@ -530,6 +537,10 @@ export const PRESETS: ImagePreset[] = [
       'Check the result’s displayed KB value and exact byte count before downloading.',
       'If it misses the range, adjust dimensions or the target only as allowed by the destination, then review the output again.',
     ],
+    practicalTips: [
+      'If the destination specifies dimensions as well as a file-size range, enter the required dimensions before judging whether the output is too large or too small.',
+      'If the destination sets only a maximum of 100 KB, confirm whether an output below this preset’s 80 KB starting minimum is acceptable.',
+    ],
     limitations:
       'The 80–100 KB range is an ExactSpec starting target, not a universal upload requirement. JPEG encoding may not reach it for every image at the chosen dimensions; inspect the measured output size and follow your destination’s rules.',
     relatedLinks: [
@@ -574,6 +585,10 @@ export const PRESETS: ImagePreset[] = [
       'Let ExactSpec create the JPG using the 160–200 KB starting range.',
       'Check the result’s displayed KB value and exact byte count before downloading.',
       'If it misses the range, adjust dimensions or the target only as allowed by the destination, then review the output again.',
+    ],
+    practicalTips: [
+      'When the destination permits a file up to 200 KB, do not assume you need to reach this preset’s 160 KB minimum; verify whether it requires a range or only a maximum.',
+      'If the destination specifies pixel dimensions, keep those requirements in view while checking the output size and image detail.',
     ],
     limitations:
       'The 160–200 KB range is an ExactSpec starting target, not a universal upload requirement. JPEG encoding may not reach it for every image at the chosen dimensions; inspect the measured output size and follow your destination’s rules.',
@@ -678,6 +693,11 @@ export const PUBLISHED_PRESETS = PRESETS.filter(
   (preset) => preset.published !== false
 );
 
-export const QUICK_PRESETS = PRESETS.filter(
-  (preset) => preset.showAsButton === true
-).slice(0, 4);
+export const QUICK_PRESETS = [
+  'photo-20-kb',
+  'photo-50-kb',
+  'photo-100-kb',
+  'passport-size-photo-35x45-mm',
+]
+  .map((slug) => PUBLISHED_PRESETS.find((preset) => preset.slug === slug))
+  .filter((preset): preset is ImagePreset => preset !== undefined);

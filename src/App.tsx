@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { X } from 'lucide-react';
 import { PUBLISHED_PRESETS, PRESETS, type ImagePreset } from './data/presets';
 import {
   CropRect,
@@ -11,8 +12,10 @@ import {
   ProcessedImageOutput,
   createSampleImageFile,
   loadImageFromFile,
+  OutputFormat,
   processImageToTargetSpec,
 } from './utils/imageProcessor';
+import { ImageProcessingLimitError } from './utils/imageProcessingSafety';
 import { UploadZone } from './components/UploadZone';
 import { RequirementsForm, TargetSpecs } from './components/RequirementsForm';
 import { CropWorkspace } from './components/CropWorkspace';
@@ -55,10 +58,22 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
 
   const [processedOutput, setProcessedOutput] =
     useState<ProcessedImageOutput | null>(null);
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>('jpg');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [pngRangeWarning, setPngRangeWarning] = useState<{
+    sizeKB: number;
+    minKB: number;
+    maxKB: number;
+  } | null>(null);
 
   const prevPreviewUrlRef = useRef<string | null>(null);
   const prevSourceUrlRef = useRef<string | null>(null);
+  const lastPngWarningKeyRef = useRef<string | null>(null);
+  const pngRangeWarningRef = useRef<HTMLDivElement>(null);
+  const failedProcessingRequestRef = useRef<{
+    key: string;
+    message: string;
+  } | null>(null);
 
   const parsedSpecs = useMemo(() => {
     const minKB = Math.max(1, parseFloat(specs.minKB) || 10);
@@ -189,23 +204,36 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
       return;
     }
 
+    const isRot90 = rotationDeg % 180 !== 0;
+    const effW = isRot90 ? loadedImage.height : loadedImage.width;
+    const effH = isRot90 ? loadedImage.width : loadedImage.height;
+    const croppedW = Math.max(1, Math.round(crop.width * effW));
+    const croppedH = Math.max(1, Math.round(crop.height * effH));
+    const outWidth =
+      aspectLocked && parsedSpecs.targetW ? parsedSpecs.targetW : croppedW;
+    const outHeight =
+      aspectLocked && parsedSpecs.targetH ? parsedSpecs.targetH : croppedH;
+    const requestKey = [
+      loadedImage.objectUrl,
+      outWidth,
+      outHeight,
+      crop.width,
+      crop.height,
+      rotationDeg,
+    ].join(':');
+
+    if (failedProcessingRequestRef.current?.key === requestKey) {
+      setProcessedOutput(null);
+      setUploadError(failedProcessingRequestRef.current.message);
+      return;
+    }
+
+    setUploadError(null);
     let cancelled = false;
     setIsProcessing(true);
 
     const timer = window.setTimeout(async () => {
       try {
-        const isRot90 = rotationDeg % 180 !== 0;
-        const effW = isRot90 ? loadedImage.height : loadedImage.width;
-        const effH = isRot90 ? loadedImage.width : loadedImage.height;
-
-        const croppedW = Math.max(1, Math.round(crop.width * effW));
-        const croppedH = Math.max(1, Math.round(crop.height * effH));
-
-        const outWidth =
-          aspectLocked && parsedSpecs.targetW ? parsedSpecs.targetW : croppedW;
-        const outHeight =
-          aspectLocked && parsedSpecs.targetH ? parsedSpecs.targetH : croppedH;
-
         const output = await processImageToTargetSpec({
           source: loadedImage,
           crop,
@@ -213,6 +241,7 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
           targetHeight: outHeight,
           minKB: parsedSpecs.minKB,
           maxKB: parsedSpecs.maxKB,
+          format: outputFormat,
           rotationDeg,
         });
 
@@ -224,14 +253,28 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
         if (prevPreviewUrlRef.current) {
           URL.revokeObjectURL(prevPreviewUrlRef.current);
         }
+        failedProcessingRequestRef.current = null;
         prevPreviewUrlRef.current = output.previewUrl;
         setProcessedOutput(output);
       } catch (err) {
         if (!cancelled) {
-          setUploadError(
+          const message =
             err instanceof Error
               ? err.message
-              : 'Failed to process image in browser.'
+              : 'Failed to process image in browser.';
+          if (err instanceof ImageProcessingLimitError) {
+            failedProcessingRequestRef.current = {
+              key: requestKey,
+              message,
+            };
+          }
+          if (prevPreviewUrlRef.current) {
+            URL.revokeObjectURL(prevPreviewUrlRef.current);
+            prevPreviewUrlRef.current = null;
+          }
+          setProcessedOutput(null);
+          setUploadError(
+            message
           );
         }
       } finally {
@@ -253,7 +296,55 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
     parsedSpecs.targetH,
     parsedSpecs.minKB,
     parsedSpecs.maxKB,
+    outputFormat,
   ]);
+
+  useEffect(() => {
+    if (isProcessing) return;
+
+    if (
+      !processedOutput ||
+      processedOutput.format !== 'png' ||
+      processedOutput.inRange ||
+      !loadedImage
+    ) {
+      lastPngWarningKeyRef.current = null;
+      return;
+    }
+
+    const warningKey = `${loadedImage.objectUrl}:${parsedSpecs.minKB}:${parsedSpecs.maxKB}`;
+    if (lastPngWarningKeyRef.current === warningKey) return;
+
+    lastPngWarningKeyRef.current = warningKey;
+    setPngRangeWarning({
+      sizeKB: processedOutput.sizeKB,
+      minKB: parsedSpecs.minKB,
+      maxKB: parsedSpecs.maxKB,
+    });
+  }, [
+    isProcessing,
+    loadedImage,
+    parsedSpecs.maxKB,
+    parsedSpecs.minKB,
+    processedOutput,
+  ]);
+
+  useEffect(() => {
+    if (!pngRangeWarning) return;
+
+    const dismissOnOutsideClick = (event: PointerEvent) => {
+      if (
+        event.target instanceof Node &&
+        !pngRangeWarningRef.current?.contains(event.target)
+      ) {
+        setPngRangeWarning(null);
+      }
+    };
+
+    document.addEventListener('pointerdown', dismissOnOutsideClick);
+    return () =>
+      document.removeEventListener('pointerdown', dismissOnOutsideClick);
+  }, [pngRangeWarning]);
 
   const handleAutoScaleDimensions = () => {
     if (!processedOutput) return;
@@ -284,6 +375,32 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
 
   return (
     <div className="flex flex-col bg-slate-50 text-slate-900">
+      {pngRangeWarning && (
+        <div
+          ref={pngRangeWarningRef}
+          role="alert"
+          aria-live="assertive"
+          className="fixed left-1/2 top-4 z-[100] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-2xl border-2 border-amber-500 bg-amber-100 px-5 py-4 pr-14 text-amber-950 shadow-xl sm:px-6 sm:pr-16"
+        >
+          <button
+            type="button"
+            onClick={() => setPngRangeWarning(null)}
+            aria-label="Close image size warning"
+            className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-lg text-amber-950 hover:bg-amber-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-900"
+          >
+            <X className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <p className="text-base font-bold tracking-tight sm:text-lg">
+            This image may not meet the size you need
+          </p>
+          <p className="mt-1 text-sm font-medium leading-relaxed sm:text-base">
+            It is {pngRangeWarning.sizeKB} KB, but your limit is {pngRangeWarning.minKB}–{pngRangeWarning.maxKB} KB. Check that this size is okay before using it.
+          </p>
+          <p className="mt-2 text-sm leading-relaxed sm:text-base">
+            Try JPG if you need to meet a file-size limit. You can also change the image dimensions and check the new file size.
+          </p>
+        </div>
+      )}
       <section className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-8 sm:py-8">
         <div className="grid grid-cols-1 gap-6 sm:gap-8 items-start">
           <div className="lg:col-span-6 space-y-6">
@@ -299,6 +416,8 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
               specs={specs}
               onChangeSpecs={handleChangeSpecs}
               onApplyPreset={handleApplyPreset}
+              outputFormat={outputFormat}
+              onChangeOutputFormat={setOutputFormat}
             />
           </div>
 
@@ -316,6 +435,7 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
                   aspectLocked={aspectLocked}
                   processedOutput={processedOutput}
                   isProcessing={isProcessing}
+                  outputFormat={outputFormat}
                   onChangeCrop={setCrop}
                   onToggleAspectLock={(nextLocked) =>
                     setAspectLocked((prev) =>
@@ -331,6 +451,7 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
                   isProcessing={isProcessing}
                   minKB={parsedSpecs.minKB}
                   maxKB={parsedSpecs.maxKB}
+                  outputFormat={outputFormat}
                   onAutoScaleDimensions={handleAutoScaleDimensions}
                 />
               </>

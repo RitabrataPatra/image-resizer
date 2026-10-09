@@ -14,6 +14,7 @@ import {
 import { CropRect } from '../utils/dimensions';
 import {
   LoadedImageInfo,
+  OutputFormat,
   ProcessedImageOutput,
 } from '../utils/imageProcessor';
 
@@ -29,6 +30,7 @@ interface CropWorkspaceProps {
   aspectLocked: boolean;
   processedOutput: ProcessedImageOutput | null;
   isProcessing: boolean;
+  outputFormat: OutputFormat;
   onChangeCrop: (nextCrop: CropRect) => void;
   onToggleAspectLock: (nextLocked?: boolean) => void;
   onRotate: () => void;
@@ -57,6 +59,7 @@ export const CropWorkspace: React.FC<CropWorkspaceProps> = ({
   aspectLocked,
   processedOutput,
   isProcessing,
+  outputFormat,
   onChangeCrop,
   onToggleAspectLock,
   onRotate,
@@ -118,30 +121,60 @@ export const CropWorkspace: React.FC<CropWorkspaceProps> = ({
       return;
     }
 
-    const canvas = document.createElement('canvas');
-    if (normRot === 90 || normRot === 270) {
-      canvas.width = image.height;
-      canvas.height = image.width;
-    } else {
-      canvas.width = image.width;
-      canvas.height = image.height;
+    let canvas: HTMLCanvasElement;
+    let ctx: CanvasRenderingContext2D | null;
+    try {
+      canvas = document.createElement('canvas');
+      const previewWidth =
+        normRot === 90 || normRot === 270 ? image.height : image.width;
+      const previewHeight =
+        normRot === 90 || normRot === 270 ? image.width : image.height;
+      canvas.width = previewWidth;
+      canvas.height = previewHeight;
+      if (
+        canvas.width !== previewWidth ||
+        canvas.height !== previewHeight
+      ) {
+        throw new Error('Rotated preview dimensions were not accepted.');
+      }
+      ctx = canvas.getContext('2d');
+    } catch {
+      setOrientedUrl(image.objectUrl);
+      return;
     }
-    const ctx = canvas.getContext('2d');
     if (!ctx) {
       setOrientedUrl(image.objectUrl);
       return;
     }
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    ctx.rotate((normRot * Math.PI) / 180);
-    ctx.drawImage(image.element, -image.width / 2, -image.height / 2);
+    try {
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((normRot * Math.PI) / 180);
+      ctx.drawImage(image.element, -image.width / 2, -image.height / 2);
+    } catch {
+      setOrientedUrl(image.objectUrl);
+      return;
+    }
 
     let active = true;
     let createdUrl: string | null = null;
-    canvas.toBlob((blob) => {
-      if (!blob || !active) return;
-      createdUrl = URL.createObjectURL(blob);
-      setOrientedUrl(createdUrl);
-    }, 'image/jpeg', 0.95);
+    try {
+      canvas.toBlob((blob) => {
+        if (!active) return;
+        if (!blob) {
+          setOrientedUrl(image.objectUrl);
+          return;
+        }
+        try {
+          createdUrl = URL.createObjectURL(blob);
+          setOrientedUrl(createdUrl);
+        } catch {
+          setOrientedUrl(image.objectUrl);
+        }
+      }, 'image/jpeg', 0.95);
+    } catch {
+      setOrientedUrl(image.objectUrl);
+      return;
+    }
 
     return () => {
       active = false;
@@ -262,6 +295,22 @@ export const CropWorkspace: React.FC<CropWorkspaceProps> = ({
     const nextZoom = Math.max(1, Math.min(5, Number(nextZoomRaw.toFixed(2))));
     setZoom(nextZoom);
   };
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const handleWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      const delta = -event.deltaY * 0.0025;
+      setZoom((currentZoom) =>
+        Math.max(1, Math.min(5, Number((currentZoom + delta).toFixed(2))))
+      );
+    };
+
+    stage.addEventListener('wheel', handleWheel, { passive: false });
+    return () => stage.removeEventListener('wheel', handleWheel);
+  }, []);
 
   // Apply the inner crop box into the main zoom/center view
   const handleApplyCrop = () => {
@@ -451,13 +500,6 @@ export const CropWorkspace: React.FC<CropWorkspaceProps> = ({
     dragStartRef.current = null;
   };
 
-  // Mouse wheel zoom directly on the stage
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const delta = -e.deltaY * 0.0025;
-    applyZoom(zoom + delta);
-  };
-
   const handleReset = () => {
     setZoom(1);
     setCenter({ x: 0.5, y: 0.5 });
@@ -629,7 +671,6 @@ useEffect(() => {
           {/* LEFT / TOP: Interactive Target Window Stage */}
           <div
             ref={stageRef}
-            onWheel={handleWheel}
             onPointerDown={(e) => handlePointerDown(e, 'pan')}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -868,9 +909,11 @@ useEffect(() => {
             <div className="flex items-center justify-between gap-2 pt-1">
               <span className="text-[11px] font-mono text-slate-500 truncate">
                 {isProcessing
-                  ? 'Updating JPG…'
+                  ? `Updating ${outputFormat.toUpperCase()}…`
                   : processedOutput
-                    ? `JPG · Quality ${Math.round(processedOutput.quality * 100)}%`
+                    ? processedOutput.quality !== undefined
+                      ? `JPG · Quality ${Math.round(processedOutput.quality * 100)}%`
+                      : 'PNG · Lossless compression'
                     : ''}
               </span>
 
@@ -881,7 +924,7 @@ useEffect(() => {
                   className="inline-flex min-h-[36px] items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition-colors whitespace-nowrap"
                 >
                   <Download className="h-3.5 w-3.5 shrink-0" />
-                  <span>Download JPG</span>
+                  <span>Download {processedOutput.format.toUpperCase()}</span>
                 </button>
               )}
             </div>

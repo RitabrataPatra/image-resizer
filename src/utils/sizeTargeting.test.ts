@@ -127,27 +127,22 @@ describe('dimension & range utilities', () => {
     assert.equal(crop.y, 0);
   });
 
-  it('keeps quick presets limited to published button presets', () => {
-    const unpublishedButtonPresets = PRESETS.filter(
-      (preset) => preset.published === false && preset.showAsButton === true
-    );
-    const visibleButtonPresets = PRESETS.filter(
-      (preset) => preset.published !== false && preset.showAsButton === true
-    );
+  it('uses the four requested published presets as quick presets', () => {
+    const expectedQuickPresetSlugs = [
+      'photo-20-kb',
+      'photo-50-kb',
+      'photo-100-kb',
+      'passport-size-photo-35x45-mm',
+    ];
 
     assert.deepEqual(
-      unpublishedButtonPresets.map((preset) => preset.slug),
-      [],
-      'Unpublished presets should not be configured as quick-preset buttons'
+      QUICK_PRESETS.map((preset) => preset.slug),
+      expectedQuickPresetSlugs,
+      'Quick presets should appear in the requested order'
     );
     assert.ok(
-      QUICK_PRESETS.length <= 4,
-      `Expected at most 4 quick presets, received ${QUICK_PRESETS.length}`
-    );
-    assert.deepEqual(
-      QUICK_PRESETS.map((preset) => preset.slug),
-      visibleButtonPresets.slice(0, 4).map((preset) => preset.slug),
-      'Quick preset order should follow the showAsButton flags without publishing draft routes'
+      QUICK_PRESETS.every((preset) => preset.published !== false),
+      'Quick presets must all have published destination pages'
     );
   });
 

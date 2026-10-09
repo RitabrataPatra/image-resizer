@@ -2,11 +2,20 @@ import { CropRect } from './dimensions';
 import {
   findJpegQualityForSizeRange,
   SizeTargetResult,
+  SizeTargetStatus,
 } from './sizeTargeting';
+import {
+  ImageProcessingLimitError,
+  validateCanvasDimensions,
+  validateProcessingDimensions,
+  validateSourceImageDimensions,
+} from './imageProcessingSafety';
 
 export const MAX_UPLOAD_MB = 30;
 export const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
 export const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+
+export type OutputFormat = 'jpg' | 'png';
 
 export interface LoadedImageInfo {
   file: File;
@@ -20,7 +29,16 @@ export interface LoadedImageInfo {
   element: HTMLImageElement;
 }
 
-export interface ProcessedImageOutput extends SizeTargetResult<Blob> {
+export interface ProcessedImageOutput {
+  blob: Blob;
+  sizeBytes: number;
+  sizeKB: number;
+  quality?: number;
+  inRange: boolean;
+  status: SizeTargetStatus;
+  iterations: number;
+  explanation: string;
+  format: OutputFormat;
   previewUrl: string;
   width: number;
   height: number;
@@ -74,6 +92,14 @@ export function loadImageFromFile(file: File): Promise<LoadedImageInfo> {
         return;
       }
 
+      try {
+        validateSourceImageDimensions(img.naturalWidth, img.naturalHeight);
+      } catch (error) {
+        URL.revokeObjectURL(objectUrl);
+        reject(error);
+        return;
+      }
+
       resolve({
         file,
         objectUrl,
@@ -122,6 +148,25 @@ export function canvasToJpegBlob(
   });
 }
 
+export function canvasToPngBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          reject(new Error('Browser failed to encode PNG image.'));
+          return;
+        }
+        if (blob.type !== 'image/png') {
+          reject(new Error(`Browser returned an unexpected image type: ${blob.type || 'unknown'}.`));
+          return;
+        }
+        resolve(blob);
+      },
+      'image/png'
+    );
+  });
+}
+
 /**
  * Crops the source image using normalized CropRect (0..1) and resizes cleanly
  * to (targetWidth x targetHeight) using stepped downsampling for large 10MB+ phone photos.
@@ -131,10 +176,19 @@ export function renderCroppedCanvas(
   crop: CropRect,
   targetWidth: number,
   targetHeight: number,
-  rotationDeg: number = 0
+  rotationDeg: number = 0,
+  preserveTransparency: boolean = false
 ): HTMLCanvasElement {
   const naturalW = sourceImg.naturalWidth;
   const naturalH = sourceImg.naturalHeight;
+  validateProcessingDimensions({
+    sourceWidth: naturalW,
+    sourceHeight: naturalH,
+    targetWidth,
+    targetHeight,
+    crop,
+    rotationDeg,
+  });
 
   // First, if rotated by 90/180/270 degrees, orient onto a working canvas
   let orientedSource: CanvasImageSource = sourceImg;
@@ -143,23 +197,20 @@ export function renderCroppedCanvas(
 
   const normRot = ((rotationDeg % 360) + 360) % 360;
   if (normRot !== 0) {
-    const rotCanvas = document.createElement('canvas');
-    if (normRot === 90 || normRot === 270) {
-      rotCanvas.width = naturalH;
-      rotCanvas.height = naturalW;
-    } else {
-      rotCanvas.width = naturalW;
-      rotCanvas.height = naturalH;
-    }
-    const rCtx = rotCanvas.getContext('2d');
-    if (rCtx) {
-      rCtx.translate(rotCanvas.width / 2, rotCanvas.height / 2);
-      rCtx.rotate((normRot * Math.PI) / 180);
-      rCtx.drawImage(sourceImg, -naturalW / 2, -naturalH / 2);
-      orientedSource = rotCanvas;
-      orientedW = rotCanvas.width;
-      orientedH = rotCanvas.height;
-    }
+    const rotatedWidth =
+      normRot === 90 || normRot === 270 ? naturalH : naturalW;
+    const rotatedHeight =
+      normRot === 90 || normRot === 270 ? naturalW : naturalH;
+    const { canvas: rotCanvas, context: rCtx } = createProcessingCanvas(
+      rotatedWidth,
+      rotatedHeight
+    );
+    rCtx.translate(rotCanvas.width / 2, rotCanvas.height / 2);
+    rCtx.rotate((normRot * Math.PI) / 180);
+    rCtx.drawImage(sourceImg, -naturalW / 2, -naturalH / 2);
+    orientedSource = rotCanvas;
+    orientedW = rotCanvas.width;
+    orientedH = rotCanvas.height;
   }
 
   const sx = Math.max(0, Math.round(crop.x * orientedW));
@@ -171,74 +222,99 @@ export function renderCroppedCanvas(
   const outH = Math.max(1, Math.round(targetHeight));
 
   // Progressive half-stepping when downscaling by more than 2x (prevents aliasing on 12MP phone photos)
-  let curCanvas = document.createElement('canvas');
+  let curCanvas: HTMLCanvasElement;
   let curW = sw;
   let curH = sh;
 
   if (curW > outW * 2.2 || curH > outH * 2.2) {
     curW = Math.max(outW, Math.floor(curW * 0.5));
     curH = Math.max(outH, Math.floor(curH * 0.5));
-    curCanvas.width = curW;
-    curCanvas.height = curH;
-    const stepCtx = curCanvas.getContext('2d');
-    if (stepCtx) {
+    const stepCanvas = createProcessingCanvas(curW, curH);
+    curCanvas = stepCanvas.canvas;
+    const stepCtx = stepCanvas.context;
+    if (!preserveTransparency) {
       stepCtx.fillStyle = '#FFFFFF';
       stepCtx.fillRect(0, 0, curW, curH);
-      stepCtx.imageSmoothingEnabled = true;
-      stepCtx.imageSmoothingQuality = 'high';
-      stepCtx.drawImage(orientedSource, sx, sy, sw, sh, 0, 0, curW, curH);
     }
+    stepCtx.imageSmoothingEnabled = true;
+    stepCtx.imageSmoothingQuality = 'high';
+    stepCtx.drawImage(orientedSource, sx, sy, sw, sh, 0, 0, curW, curH);
 
     while (curW > outW * 2.2 || curH > outH * 2.2) {
       const nextW = Math.max(outW, Math.floor(curW * 0.5));
       const nextH = Math.max(outH, Math.floor(curH * 0.5));
-      const nextCanvas = document.createElement('canvas');
-      nextCanvas.width = nextW;
-      nextCanvas.height = nextH;
-      const nCtx = nextCanvas.getContext('2d');
-      if (nCtx) {
-        nCtx.imageSmoothingEnabled = true;
-        nCtx.imageSmoothingQuality = 'high';
-        nCtx.drawImage(curCanvas, 0, 0, curW, curH, 0, 0, nextW, nextH);
-      }
+      const { canvas: nextCanvas, context: nCtx } = createProcessingCanvas(
+        nextW,
+        nextH
+      );
+      nCtx.imageSmoothingEnabled = true;
+      nCtx.imageSmoothingQuality = 'high';
+      nCtx.drawImage(curCanvas, 0, 0, curW, curH, 0, 0, nextW, nextH);
       curCanvas = nextCanvas;
       curW = nextW;
       curH = nextH;
     }
 
-    const finalCanvas = document.createElement('canvas');
-    finalCanvas.width = outW;
-    finalCanvas.height = outH;
-    const fCtx = finalCanvas.getContext('2d');
-    if (fCtx) {
+    const { canvas: finalCanvas, context: fCtx } = createProcessingCanvas(
+      outW,
+      outH
+    );
+    if (!preserveTransparency) {
       fCtx.fillStyle = '#FFFFFF';
       fCtx.fillRect(0, 0, outW, outH);
-      fCtx.imageSmoothingEnabled = true;
-      fCtx.imageSmoothingQuality = 'high';
-      fCtx.drawImage(curCanvas, 0, 0, curW, curH, 0, 0, outW, outH);
     }
+    fCtx.imageSmoothingEnabled = true;
+    fCtx.imageSmoothingQuality = 'high';
+    fCtx.drawImage(curCanvas, 0, 0, curW, curH, 0, 0, outW, outH);
     return finalCanvas;
   }
 
   // Single-step draw when scale ratio is <= 2.2x
-  const finalCanvas = document.createElement('canvas');
-  finalCanvas.width = outW;
-  finalCanvas.height = outH;
-  const ctx = finalCanvas.getContext('2d');
-  if (ctx) {
-    // Fill solid white background so transparent PNGs become clean white-background JPEGs
+  const { canvas: finalCanvas, context: ctx } = createProcessingCanvas(
+    outW,
+    outH
+  );
+  if (!preserveTransparency) {
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, outW, outH);
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(orientedSource, sx, sy, sw, sh, 0, 0, outW, outH);
   }
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(orientedSource, sx, sy, sw, sh, 0, 0, outW, outH);
   return finalCanvas;
 }
 
+function createProcessingCanvas(
+  width: number,
+  height: number
+): { canvas: HTMLCanvasElement; context: CanvasRenderingContext2D } {
+  try {
+    validateCanvasDimensions(width, height);
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+
+    if (canvas.width !== width || canvas.height !== height) {
+      throw new Error('Canvas dimensions were not accepted.');
+    }
+
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('A 2D canvas context is unavailable.');
+    }
+
+    return { canvas, context };
+  } catch (error) {
+    if (error instanceof ImageProcessingLimitError) throw error;
+    throw new ImageProcessingLimitError(
+      'The browser could not prepare this image safely. Try a smaller image or smaller dimensions.'
+    );
+  }
+}
+
 /**
- * Full pipeline: crops, resizes on canvas, and binary-searches JPEG quality
- * to hit [minKB, maxKB].
+ * Crops and resizes the source, then encodes in the requested format.
+ * JPEG quality is searched against the target range; PNG size is measured as encoded.
  */
 export async function processImageToTargetSpec(params: {
   source: LoadedImageInfo;
@@ -247,6 +323,7 @@ export async function processImageToTargetSpec(params: {
   targetHeight: number;
   minKB: number;
   maxKB: number;
+  format?: OutputFormat;
   rotationDeg?: number;
 }): Promise<ProcessedImageOutput> {
   const {
@@ -256,6 +333,7 @@ export async function processImageToTargetSpec(params: {
     targetHeight,
     minKB,
     maxKB,
+    format = 'jpg',
     rotationDeg = 0,
   } = params;
 
@@ -264,25 +342,59 @@ export async function processImageToTargetSpec(params: {
     crop,
     targetWidth,
     targetHeight,
-    rotationDeg
+    rotationDeg,
+    format === 'png'
   );
 
-  const result = await findJpegQualityForSizeRange(
-    (q) => canvasToJpegBlob(canvas, q),
-    minKB,
-    maxKB
-  );
+  const result =
+    format === 'jpg'
+      ? await findJpegQualityForSizeRange(
+          (q) => canvasToJpegBlob(canvas, q),
+          minKB,
+          maxKB
+        )
+      : await createPngSizeResult(canvas, minKB, maxKB);
 
   const baseName = source.name.replace(/\.[^.]+$/, '') || 'resized-image';
-  const fileName = `${baseName}-${canvas.width}x${canvas.height}-${Math.round(result.sizeKB)}kb.jpg`;
+  const fileName = `${baseName}-${canvas.width}x${canvas.height}-${Math.round(result.sizeKB)}kb.${format}`;
   const previewUrl = URL.createObjectURL(result.blob);
 
   return {
     ...result,
+    format,
     previewUrl,
     width: canvas.width,
     height: canvas.height,
     fileName,
+  };
+}
+
+async function createPngSizeResult(
+  canvas: HTMLCanvasElement,
+  minKB: number,
+  maxKB: number
+): Promise<Omit<SizeTargetResult<Blob>, 'quality'>> {
+  const blob = await canvasToPngBlob(canvas);
+  const minBytes = Math.min(minKB, maxKB) * 1024;
+  const maxBytes = Math.max(minKB, maxKB) * 1024;
+  const sizeKB = Number((blob.size / 1024).toFixed(2));
+  const inRange = blob.size >= minBytes && blob.size <= maxBytes;
+  const status: SizeTargetStatus = inRange
+    ? 'in_range'
+    : blob.size < minBytes
+      ? 'below_min'
+      : 'above_max';
+
+  return {
+    blob,
+    sizeBytes: blob.size,
+    sizeKB,
+    inRange,
+    status,
+    iterations: 1,
+    explanation: inRange
+      ? `PNG output is ${sizeKB} KB, within your ${Math.min(minKB, maxKB)}–${Math.max(minKB, maxKB)} KB target range. PNG uses lossless compression, not the JPEG quality adjustment.`
+      : `PNG output is ${sizeKB} KB, outside your ${Math.min(minKB, maxKB)}–${Math.max(minKB, maxKB)} KB target range. PNG uses lossless compression, not the JPEG quality adjustment, so its size depends on the image content. Check the actual output against your destination’s requirements.`,
   };
 }
 

@@ -1,5 +1,10 @@
 import React from 'react';
-import { QUICK_PRESETS, type ImagePreset } from '../data/presets';
+import {
+  PUBLISHED_PRESETS,
+  QUICK_PRESETS,
+  type ImagePreset,
+} from '../data/presets';
+import { OutputFormat } from '../utils/imageProcessor';
 import { cmToPixels, pixelsToCm } from '../utils/dimensions';
 
 export interface TargetSpecs {
@@ -17,14 +22,18 @@ interface RequirementsFormProps {
   specs: TargetSpecs;
   onChangeSpecs: (next: TargetSpecs) => void;
   onApplyPreset: (preset: ImagePreset) => void;
+  outputFormat: OutputFormat;
+  onChangeOutputFormat: (format: OutputFormat) => void;
 }
 
 export const RequirementsForm: React.FC<RequirementsFormProps> = ({
   specs,
   onChangeSpecs,
   onApplyPreset,
+  outputFormat,
+  onChangeOutputFormat,
 }) => {
-  const quickPresets = QUICK_PRESETS.slice(0, 4);
+  const quickPresets = QUICK_PRESETS;
 
   const handlePixelChange = (field: 'widthPx' | 'heightPx', rawValue: string) => {
     const next = {
@@ -109,48 +118,90 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
         >
           02. Upload Requirements & Presets
         </h2>
-        <span className="text-xs text-red-700">Output format · JPG only</span>
+        <label
+          htmlFor="output-format"
+          className="flex items-center gap-2 text-xs text-slate-600"
+        >
+          Output format
+          <select
+            id="output-format"
+            value={outputFormat}
+            onChange={(event) =>
+              onChangeOutputFormat(event.target.value === 'png' ? 'png' : 'jpg')
+            }
+            className="min-h-[36px] rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-900 focus:border-slate-900 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
+          >
+            <option value="jpg">JPG</option>
+            <option value="png">PNG</option>
+          </select>
+        </label>
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 space-y-5">
         {/* Quick Presets from presets.ts */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <label className="text-xs font-semibold text-slate-700">
               Quick Presets
             </label>
-            <span className="text-xs text-slate-500">
-              Tap to fill target specs
-            </span>
+            <a
+              href="/all-sizes/"
+              className="shrink-0 text-[11px] font-medium text-slate-500 underline decoration-slate-300 underline-offset-2 hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
+            >
+              More presets →
+            </a>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {quickPresets.map((preset) => {
               const isSelected = specs.activePresetName === preset.name;
+              const hasPublishedPage = PUBLISHED_PRESETS.some(
+                (publishedPreset) => publishedPreset.slug === preset.slug
+              );
+              const className = `flex min-h-[48px] flex-col items-start justify-center rounded-xl border px-3.5 py-2.5 text-left transition-colors ${
+                isSelected
+                  ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                  : 'border-slate-200 bg-slate-50/70 text-slate-900 hover:border-slate-300 hover:bg-slate-100/80'
+              } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900`;
+
               return (
-                <button
-                  key={preset.name}
-                  type="button"
-                  onClick={() => onApplyPreset(preset)}
-                  className={`flex min-h-[48px] flex-col items-start justify-center rounded-xl border px-3.5 py-2.5 text-left transition-colors ${
-                    isSelected
-                      ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
-                      : 'border-slate-200 bg-slate-50/70 text-slate-900 hover:border-slate-300 hover:bg-slate-100/80'
-                  }`}
-                >
-                  <span className="w-full truncate whitespace-nowrap text-xs font-semibold">
-                    {preset.name}
-                  </span>
-                  <span
-                    className={`mt-0.5 text-[11px] font-mono ${
-                      isSelected ? 'text-slate-300' : 'text-slate-500'
-                    }`}
+                hasPublishedPage ? (
+                  <a key={preset.name} href={`/${preset.slug}/`} className={className}>
+                    <span className="w-full truncate whitespace-nowrap text-xs font-semibold">
+                      {preset.name}
+                    </span>
+                    <span
+                      className={`mt-0.5 text-[11px] font-mono ${
+                        isSelected ? 'text-slate-300' : 'text-slate-500'
+                      }`}
+                    >
+                      {preset.width !== undefined && preset.height !== undefined
+                        ? `${preset.width}×${preset.height} px · `
+                        : ''}
+                      {preset.minKB}–{preset.maxKB} KB
+                    </span>
+                  </a>
+                ) : (
+                  <button
+                    key={preset.name}
+                    type="button"
+                    onClick={() => onApplyPreset(preset)}
+                    className={className}
                   >
-                    {preset.width !== undefined && preset.height !== undefined
-                      ? `${preset.width}×${preset.height} px · `
-                      : ''}
-                    {preset.minKB}–{preset.maxKB} KB
-                  </span>
-                </button>
+                    <span className="w-full truncate whitespace-nowrap text-xs font-semibold">
+                      {preset.name}
+                    </span>
+                    <span
+                      className={`mt-0.5 text-[11px] font-mono ${
+                        isSelected ? 'text-slate-300' : 'text-slate-500'
+                      }`}
+                    >
+                      {preset.width !== undefined && preset.height !== undefined
+                        ? `${preset.width}×${preset.height} px · `
+                        : ''}
+                      {preset.minKB}–{preset.maxKB} KB
+                    </span>
+                  </button>
+                )
               );
             })}
           </div>

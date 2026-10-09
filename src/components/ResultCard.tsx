@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import {
   LoadedImageInfo,
+  OutputFormat,
   ProcessedImageOutput,
 } from '../utils/imageProcessor';
 import { formatFileSize } from '../utils/dimensions';
@@ -18,6 +19,7 @@ interface ResultCardProps {
   isProcessing: boolean;
   minKB: number;
   maxKB: number;
+  outputFormat: OutputFormat;
   onAutoScaleDimensions?: () => void;
 }
 
@@ -27,6 +29,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
   isProcessing,
   minKB,
   maxKB,
+  outputFormat,
   onAutoScaleDimensions,
 }) => {
   const handleDownload = () => {
@@ -48,7 +51,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
         >
           04. Final Output Image &amp; Download
         </h2>
-        {result && (
+        {result?.quality !== undefined && (
           <span className="text-xs font-mono text-slate-500">
             JPEG Quality: {Math.round(result.quality * 100)}%
           </span>
@@ -56,11 +59,13 @@ export const ResultCard: React.FC<ResultCardProps> = ({
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 space-y-5">
-        {isProcessing && !result ? (
+        {isProcessing ? (
           <div className="flex flex-col items-center justify-center py-10 text-center">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900" />
             <p className="mt-3 text-sm font-medium text-slate-700">
-              Optimizing JPEG quality to match {minKB}–{maxKB} KB…
+              {outputFormat === 'jpg'
+                ? `Optimizing JPEG quality to match ${minKB}–${maxKB} KB…`
+                : 'Encoding PNG and checking its actual file size…'}
             </p>
           </div>
         ) : result ? (
@@ -84,7 +89,9 @@ export const ResultCard: React.FC<ResultCardProps> = ({
                   <p className="font-semibold">
                     {result.inRange
                       ? 'Exact requirement matched'
-                      : 'Closest possible JPEG result'}
+                      : result.format === 'png'
+                        ? 'PNG output is outside the target range'
+                        : 'Closest possible JPEG result'}
                   </p>
                   <span className="text-xs font-mono">
                     Target: {minKB}–{maxKB} KB
@@ -95,6 +102,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
                 </p>
 
                 {!result.inRange &&
+                  result.format === 'jpg' &&
                   (result.status === 'below_min' ||
                     result.status === 'above_max') &&
                   onAutoScaleDimensions && (
@@ -139,7 +147,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
               <div className="rounded-xl border border-slate-900/15 bg-slate-900/[0.03] p-3.5">
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-semibold text-slate-900">
-                    New Output (JPG)
+                    New Output ({result.format.toUpperCase()})
                   </p>
                   <ArrowRight className="h-3.5 w-3.5 text-slate-400 hidden sm:block" />
                 </div>
@@ -154,9 +162,13 @@ export const ResultCard: React.FC<ResultCardProps> = ({
                     {result.width} × {result.height} px
                   </span>
                   <span aria-hidden="true">·</span>
-                  <span>JPG</span>
-                  <span aria-hidden="true">·</span>
-                  <span>Quality {Math.round(result.quality * 100)}%</span>
+                  <span>{result.format.toUpperCase()}</span>
+                  {result.quality !== undefined && (
+                    <>
+                      <span aria-hidden="true">·</span>
+                      <span>Quality {Math.round(result.quality * 100)}%</span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -186,7 +198,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
             >
               <Download className="h-4 w-4 shrink-0" />
               <span>
-                Download JPG ({result.sizeKB} KB · {result.width}×{result.height})
+                Download {result.format.toUpperCase()} ({result.sizeKB} KB · {result.width}×{result.height})
               </span>
             </button>
           </>
