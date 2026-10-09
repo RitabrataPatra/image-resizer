@@ -12,7 +12,11 @@ ExactSpec is a browser-based tool for preparing photos and signatures for online
 
 Presets are starting points, not universal requirements. Check the destination's instructions and review the output before submitting it.
 
-## Demo
+## Demo URL
+
+[https://image-resizer-sand.vercel.app/](https://image-resizer-sand.vercel.app/)
+
+## Live Production URL
 
 [https://www.exactspec.app/](https://www.exactspec.app/)
 
