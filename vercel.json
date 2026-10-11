@@ -1,0 +1,30 @@
+
+{
+  "redirects": [
+    {
+      "source": "/photo-20-kb",
+      "destination": "/resize-image-20-kb/",
+      "permanent": true,
+        "statusCode": 301
+    },
+    {
+      "source": "/photo-50-kb",
+      "destination": "/resize-image-50-kb/",
+      "permanent": true,
+        "statusCode": 301
+
+    },
+    {
+      "source": "/photo-100-kb",
+      "destination": "/resize-image-100-kb/",
+      "permanent": true,
+        "statusCode": 301
+    },
+    {
+      "source": "/photo-200-kb",
+      "destination": "/resize-image-200-kb/",
+      "permanent": true,
+      "statusCode": 301
+    }
+  ]
+}
