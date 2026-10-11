@@ -31,16 +31,16 @@ export interface ImagePreset {
 
 export const PRESETS: ImagePreset[] = [
   {
-    slug: 'photo-50-kb',
+    slug: 'resize-image-50-kb',
     type: 'photo',
-    name: 'Photo 50 KB',
-    title: 'Photo 50 KB',
-    seoTitle: 'Resize Photo to 50 KB: Free, No Upload',
+    name: 'Resize Image to 50 KB',
+    title: 'Resize Image to 50 KB Online Free',
+    seoTitle: 'Resize Image to 50 KB Online Free',
     seoDescription:
-      'Work toward a 30–50 KB photo target in your browser. Check the destination’s file-size requirements and review the JPG output.',
+      'Resize any image to 50 KB online for free using ExactSpec Image Resizer. Prepare an image for websites, forms, and uploads with a convenient image-resizing tool.',
     description:
       'Use this 30–50 KB preset when a form or service gives you a photo file-size limit in this range. Check that destination’s requirements before exporting.',
-    h1: 'Resize Photo to 50 KB',
+    h1: 'Resize Image to 50 KB Online',
     intro:
       'This ExactSpec preset starts with a 30–50 KB target range. Use it when a particular form, portal, or service gives you a file-size limit that fits; its requirements may differ. File size in KB, pixel dimensions, and JPEG quality are related but distinct.',
     faqs: [
@@ -138,7 +138,7 @@ export const PRESETS: ImagePreset[] = [
     relatedLinks: [
       { label: 'Home image resizer', href: '/' },
       { label: 'All published size presets', href: '/all-sizes/' },
-      { label: 'Photo 50 KB preset', href: '/photo-50-kb/' },
+      { label: 'Resize Image to 50 KB', href: '/resize-image-50-kb/' },
     ],
     sourceUrl:
       'https://passportindia.gov.in/pdf/ApplicationformInstructionBooklet-V3.0.pdf',
@@ -193,7 +193,7 @@ export const PRESETS: ImagePreset[] = [
       'Facebook display sizes and upload requirements may vary by placement and change over time. The square dimensions and file-size range here are ExactSpec starting values, not a guarantee of acceptance.',
     relatedLinks: [
       { label: 'All published size presets', href: '/all-sizes/' },
-      { label: 'Photo 50 KB preset', href: '/photo-50-kb/' },
+      { label: 'Resize Image to 50 KB', href: '/resize-image-50-kb/' },
       {
         label: 'Passport-size photo preset',
         href: '/passport-size-photo-35x45-mm/',
@@ -456,18 +456,18 @@ export const PRESETS: ImagePreset[] = [
     showAsButton: false,
   },
   {
-    slug: 'photo-20-kb',
+    slug: 'resize-image-20-kb',
     type: 'photo',
-    name: 'Photo 20 KB',
-    title: 'Photo 20 KB',
-    seoTitle: 'Resize Photo to 20 KB Online Free',
+    name: 'Resize Image to 20 KB',
+    title: 'Resize Image to 20 KB Online',
+    seoTitle: 'Resize Image to 20 KB Online Free ',
     seoDescription:
-      'Resize a photo toward a 15–20 KB JPG target. Check the actual output size and adjust dimensions if needed; follow your application’s file-size rules.',
+      'Resize your image to 20 KB online for free with ExactSpec. Adjust your image, preview the result, and download it for your application or upload.',
     description:
       'Use this ExactSpec starting range when a destination allows a photo file size of up to 20 KB. Check the destination’s own requirements.',
-    h1: 'Resize Photo to 20 KB',
+    h1: 'Resize Image to 20 KB Online',
     intro:
-      'Start with ExactSpec’s 15–20 KB JPG target. Upload and crop your photo, then check the generated file’s actual size before downloading. The target is a starting point; use the limits specified by the application or website receiving your image.',
+    'Resize your image to 20 KB online for free with ExactSpec. Upload and crop your photo, then check the generated file’s actual size before downloading. The target is a starting point; use the limits specified by the application or website receiving your image.',
     faqs: [
       {
         q: 'How do I use the 20 KB photo preset?',
@@ -496,8 +496,8 @@ export const PRESETS: ImagePreset[] = [
       'The 15–20 KB range is an ExactSpec starting target, not a universal upload requirement. JPEG encoding may not reach it for every image at the chosen dimensions; inspect the measured output size and follow your destination’s rules.',
     relatedLinks: [
       { label: 'All published size presets', href: '/all-sizes/' },
-      { label: 'Photo 50 KB preset', href: '/photo-50-kb/' },
-      { label: 'Photo 100 KB preset', href: '/photo-100-kb/' },
+      { label: 'Resize Image to 50 KB', href: '/resize-image-50-kb/' },
+      { label: 'Resize Image to 100 KB', href: '/resize-image-100-kb/' },
     ],
     minKB: 15,
     maxKB: 20,
@@ -505,16 +505,16 @@ export const PRESETS: ImagePreset[] = [
     showAsButton: false,
   },
   {
-    slug: 'photo-100-kb',
+    slug: 'resize-image-100-kb',
     type: 'photo',
-    name: 'Photo 100 KB',
-    title: 'Photo 100 KB',
-    seoTitle: 'Resize Photo to 100 KB Online Free',
+    name: 'Resize Image to 100 KB',
+    title: 'Resize Image to 100 KB Online Free',
+    seoTitle: 'Resize Image to 100 KB Online Free',
     seoDescription:
-      'Resize a photo toward an 80–100 KB JPG target. Check the actual output size and adjust dimensions if needed; follow your application’s file-size rules.',
+      'Resize any image to 100 KB online for free with ExactSpec Image Resizer. Adjust the file size, check the result, and download your image for your intended use.',
     description:
       'Use this ExactSpec starting range when a destination allows a photo file size of up to 100 KB. Check the destination’s own requirements.',
-    h1: 'Resize Photo to 100 KB',
+    h1: 'Resize Image to 100 KB',
     intro:
       'Start with ExactSpec’s 80–100 KB JPG target. Upload and crop your photo, then check the generated file’s actual size before downloading. Use the file-size and image limits specified by the application or website receiving your image.',
     faqs: [
@@ -545,8 +545,8 @@ export const PRESETS: ImagePreset[] = [
       'The 80–100 KB range is an ExactSpec starting target, not a universal upload requirement. JPEG encoding may not reach it for every image at the chosen dimensions; inspect the measured output size and follow your destination’s rules.',
     relatedLinks: [
       { label: 'All published size presets', href: '/all-sizes/' },
-      { label: 'Photo 50 KB preset', href: '/photo-50-kb/' },
-      { label: 'Photo 200 KB preset', href: '/photo-200-kb/' },
+      { label: 'Resize Image to 50 KB', href: '/resize-image-50-kb/' },
+      { label: 'Resize Image to 200 KB', href: '/resize-image-200-kb/' },
     ],
     minKB: 80,
     maxKB: 100,
@@ -554,16 +554,16 @@ export const PRESETS: ImagePreset[] = [
     showAsButton: false,
   },
   {
-    slug: 'photo-200-kb',
+    slug: 'resize-image-200-kb',
     type: 'photo',
-    name: 'Photo 200 KB',
-    title: 'Photo 200 KB',
-    seoTitle: 'Resize Photo to 200 KB Online Free',
+    name: 'Resize Image to 200 KB',
+    title: 'Resize Image to 200 KB Online',
+    seoTitle: 'Resize Image to 200 KB Online Free',
     seoDescription:
-      'Resize a photo toward a 160–200 KB JPG target. Check the actual output size and adjust dimensions if needed; follow your application’s file-size rules.',
+      'Resize any image to 200 KB online for free with ExactSpec. Adjust the file size, check the result, and download your image for your intended use.',
     description:
       'Use this ExactSpec starting range when a destination allows a photo file size of up to 200 KB. Check the destination’s own requirements.',
-    h1: 'Resize Photo to 200 KB',
+    h1: 'Resize Image to 200 KB Online',
     intro:
       'Start with ExactSpec’s 160–200 KB JPG target. Upload and crop your photo, then check the generated file’s actual size before downloading. Use the file-size and image limits specified by the application or website receiving your image.',
     faqs: [
@@ -594,8 +594,8 @@ export const PRESETS: ImagePreset[] = [
       'The 160–200 KB range is an ExactSpec starting target, not a universal upload requirement. JPEG encoding may not reach it for every image at the chosen dimensions; inspect the measured output size and follow your destination’s rules.',
     relatedLinks: [
       { label: 'All published size presets', href: '/all-sizes/' },
-      { label: 'Photo 100 KB preset', href: '/photo-100-kb/' },
-      { label: 'Facebook profile photo square preset', href: '/facebook-profile-photo-square/' },
+      { label: 'Resize Image to 100 KB', href: '/resize-image-100-kb/' },
+      // { label: 'Resize Image to 200 KB', href: '/resize-image-200-kb/' },
     ],
     minKB: 160,
     maxKB: 200,
@@ -694,9 +694,9 @@ export const PUBLISHED_PRESETS = PRESETS.filter(
 );
 
 export const QUICK_PRESETS = [
-  'photo-20-kb',
-  'photo-50-kb',
-  'photo-100-kb',
+  'resize-image-20-kb',
+  'resize-image-50-kb',
+  'resize-image-100-kb',
   'passport-size-photo-35x45-mm',
 ]
   .map((slug) => PUBLISHED_PRESETS.find((preset) => preset.slug === slug))

@@ -129,9 +129,9 @@ describe('dimension & range utilities', () => {
 
   it('uses the four requested published presets as quick presets', () => {
     const expectedQuickPresetSlugs = [
-      'photo-20-kb',
-      'photo-50-kb',
-      'photo-100-kb',
+      'resize-image-20-kb',
+      'resize-image-50-kb',
+      'resize-image-100-kb',
       'passport-size-photo-35x45-mm',
     ];
 
@@ -154,10 +154,10 @@ describe('dimension & range utilities', () => {
       PUBLISHED_PRESETS.map((preset) => preset.slug)
     );
     for (const slug of [
-      'photo-20-kb',
-      'photo-50-kb',
-      'photo-100-kb',
-      'photo-200-kb',
+      'resize-image-20-kb',
+      'resize-image-50-kb',
+      'resize-image-100-kb',
+      'resize-image-200-kb',
       'passport-size-photo-35x45-mm',
       'facebook-profile-photo-square',
     ]) {
@@ -169,10 +169,10 @@ describe('dimension & range utilities', () => {
 
   it('keeps photo file-size preset targets in the existing KB ranges', () => {
     const expectedRanges: Record<string, [number, number]> = {
-      'photo-20-kb': [15, 20],
-      'photo-50-kb': [30, 50],
-      'photo-100-kb': [80, 100],
-      'photo-200-kb': [160, 200],
+      'resize-image-20-kb': [15, 20],
+      'resize-image-50-kb': [30, 50],
+      'resize-image-100-kb': [80, 100],
+      'resize-image-200-kb': [160, 200],
     };
 
     for (const [slug, [minKB, maxKB]] of Object.entries(expectedRanges)) {
@@ -198,10 +198,10 @@ describe('dimension & range utilities', () => {
 
   it('keeps pixel dimensions only for presets that define them', () => {
     const fileSizeOnlySlugs = [
-      'photo-50-kb',
-      'photo-20-kb',
-      'photo-100-kb',
-      'photo-200-kb',
+      'resize-image-50-kb',
+      'resize-image-20-kb',
+      'resize-image-100-kb',
+      'resize-image-200-kb',
       'government-exam-photo-50-kb',
       'background-verification-photo-50-kb',
       'college-admission-photo-50-kb',
