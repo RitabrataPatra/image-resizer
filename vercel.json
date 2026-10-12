@@ -1,4 +1,3 @@
-
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
@@ -8,7 +7,17 @@
       "statusCode": 301
     },
     {
+      "source": "/photo-20-kb/",
+      "destination": "/resize-image-20-kb/",
+      "statusCode": 301
+    },
+    {
       "source": "/photo-50-kb",
+      "destination": "/resize-image-50-kb/",
+      "statusCode": 301
+    },
+    {
+      "source": "/photo-50-kb/",
       "destination": "/resize-image-50-kb/",
       "statusCode": 301
     },
@@ -18,7 +27,17 @@
       "statusCode": 301
     },
     {
+      "source": "/photo-100-kb/",
+      "destination": "/resize-image-100-kb/",
+      "statusCode": 301
+    },
+    {
       "source": "/photo-200-kb",
+      "destination": "/resize-image-200-kb/",
+      "statusCode": 301
+    },
+    {
+      "source": "/photo-200-kb/",
       "destination": "/resize-image-200-kb/",
       "statusCode": 301
     }
