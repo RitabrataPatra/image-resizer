@@ -109,12 +109,16 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
               : 'border-slate-300 bg-white hover:border-slate-400'
           }`}
         >
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-800">
-              <Upload className="h-6 w-6" />
+          <div className="flex flex-col items-center text-center" >
+
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-800"
+            onClick={() => fileInputRef.current?.click()}>
+              <Upload className="h-6 w-6" 
+              
+              />
             </div>
-            <p className="text-base font-semibold text-slate-900">
-              Select a JPG or PNG photo or signature image
+            <p className="text-base font-semibold text-slate-900 text-lg sm:text-lg">
+              Upload any image here
             </p>
             <p className="mt-1 max-w-md text-lg sm:text-lg text-slate-500">
               Drag and drop a JPG or PNG file here, or choose from your phone’s camera roll. Everything stays on your device.
@@ -132,7 +136,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
                 className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-transform active:scale-[0.99] hover:bg-slate-800 disabled:opacity-50 whitespace-nowrap"
               >
                 <FileImage className="h-4 w-4 shrink-0" />
-                <span>Choose JPG / PNG</span>
+                <span>Upload Image</span>
               </button>
 
               <button
