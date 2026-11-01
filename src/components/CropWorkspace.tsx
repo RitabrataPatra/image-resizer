@@ -578,7 +578,7 @@ useEffect(() => {
           03. Zoom, Crop &amp; Live Output Preview
         </h2>
 
-        <div className="flex items-center gap-2 text-xs text-slate-600 font-mono">
+        <div className="flex flex-wrap items-center gap-x-2 text-xs text-slate-600 font-mono">
           <span>
             Target: {displayExportW} × {displayExportH} px
           </span>

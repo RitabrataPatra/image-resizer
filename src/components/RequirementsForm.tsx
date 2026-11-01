@@ -152,7 +152,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
 
   return (
     <section aria-labelledby="specs-heading" className="space-y-4">
-      <div className="flex items-baseline justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h2
           id="specs-heading"
           className="text-base font-semibold tracking-tight text-slate-900"
@@ -192,7 +192,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
               More presets →
             </a>
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid grid-cols-1 gap-2 min-[480px]:grid-cols-2 lg:grid-cols-4">
             {quickPresets.map((preset) => {
               const isSelected = specs.activePresetName === preset.name;
               const hasPublishedPage = PUBLISHED_PRESETS.some(
@@ -207,7 +207,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
               return (
                 hasPublishedPage ? (
                   <a key={preset.name} href={`/${preset.slug}/`} className={className}>
-                    <span className="w-full truncate whitespace-nowrap text-xs font-semibold">
+                    <span className="w-full break-words text-xs font-semibold">
                       {preset.name}
                     </span>
                     <span
@@ -228,7 +228,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
                     onClick={() => applyPreset(preset)}
                     className={className}
                   >
-                    <span className="w-full truncate whitespace-nowrap text-xs font-semibold">
+                    <span className="w-full break-words text-xs font-semibold">
                       {preset.name}
                     </span>
                     <span
@@ -508,7 +508,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
               hidden={dimensionUnit !== 'cm'}
               className={dimensionUnit === 'cm' ? 'space-y-3' : 'hidden'}
             >
-              <div className="grid grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
                 <div>
                   <label
                     htmlFor="width-cm-input"
@@ -565,7 +565,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
                   </div>
                 </div>
 
-                <div>
+                <div className="col-span-2 sm:col-span-1">
                   <label
                     htmlFor="dpi-input"
                     className="block text-xs text-slate-600 mb-1"

@@ -459,7 +459,7 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
           ref={pngRangeWarningRef}
           role="alert"
           aria-live="assertive"
-          className="fixed left-1/2 top-24 z-[100] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-2xl border-2 border-amber-500 bg-amber-100 px-5 py-4 pr-14 text-amber-950 shadow-xl sm:px-6 sm:pr-16"
+          className="fixed left-1/2 top-24 z-[100] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-2xl border-2 border-amber-500 bg-amber-100 px-3 py-3 pr-12 text-amber-950 shadow-xl sm:px-6 sm:py-4 sm:pr-16"
         >
           <button
             type="button"
@@ -469,17 +469,17 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
           >
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
-          <p className="text-base font-bold tracking-tight sm:text-lg">
+          <p className="break-words text-sm font-bold tracking-tight sm:text-lg">
             This image may not meet the size you need
           </p>
-          <p className="mt-1 text-sm font-medium leading-relaxed sm:text-base">
+          <p className="mt-1 break-words text-xs font-medium leading-relaxed sm:text-base">
             It is {pngRangeWarning.sizeKB} KB, but{' '}
             {pngRangeWarning.minKB > 0
               ? `your target is ${pngRangeWarning.minKB}–${pngRangeWarning.maxKB} KB.`
               : `it exceeds your ${pngRangeWarning.maxKB} KB maximum.`}{' '}
             Check that this size is okay before using it.
           </p>
-          <p className="mt-2 text-sm leading-relaxed sm:text-base">
+          <p className="mt-2 break-words text-xs leading-relaxed sm:text-base">
             Try JPG if you need to meet a file-size limit. You can also change the image dimensions and check the new file size.
           </p>
         </div>

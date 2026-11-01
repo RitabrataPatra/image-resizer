@@ -51,7 +51,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
 
   return (
     <section aria-labelledby="result-heading" className="space-y-3">
-      <div className="flex items-baseline justify-between">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h2
           id="result-heading"
           className="text-base font-semibold tracking-tight text-slate-900"
@@ -93,9 +93,9 @@ export const ResultCard: React.FC<ResultCardProps> = ({
                 <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
               )}
 
-              <div className="space-y-2 flex-1">
+              <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="font-semibold">
+                <p className="min-w-0 break-words font-semibold">
                     {result.inRange
                       ? 'Exact requirement matched'
                       : result.format === 'png'
@@ -114,7 +114,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
                   <p
                     role="status"
                     aria-live="polite"
-                    className="rounded-lg border border-amber-300/70 bg-white/70 px-3 py-2 text-xs font-medium leading-relaxed"
+                    className="break-words rounded-lg border border-amber-300/70 bg-white/70 px-3 py-2 text-xs font-medium leading-relaxed"
                   >
                     {minKB > 0
                       ? `Couldn't reach the ${minKB}–${maxKB} KB range at `
@@ -139,10 +139,10 @@ export const ResultCard: React.FC<ResultCardProps> = ({
                       <button
                         type="button"
                         onClick={onAutoScaleDimensions}
-                        className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-950 shadow-2xs hover:bg-amber-100/50 transition-colors whitespace-nowrap"
+                        className="inline-flex min-h-[40px] max-w-full items-center gap-1.5 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-left text-xs font-semibold text-amber-950 shadow-2xs hover:bg-amber-100/50 transition-colors whitespace-normal"
                       >
                         <Sliders className="h-3.5 w-3.5 shrink-0" />
-                        <span>
+                        <span className="min-w-0 break-words">
                           {result.status === 'below_min'
                             ? 'Scale up pixel dimensions to reach Min KB'
                             : 'Scale down pixel dimensions to fit Max KB'}
@@ -162,7 +162,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
                 <p className="mt-1 text-lg font-bold font-mono text-slate-800">
                   {formatFileSize(original.sizeBytes)}
                 </p>
-                <div className="mt-1 flex items-center gap-1.5 text-xs font-mono text-slate-600">
+                <div className="mt-1 flex flex-wrap items-center gap-x-1.5 text-xs font-mono text-slate-600">
                   <span>
                     {original.width} × {original.height} px
                   </span>
@@ -186,7 +186,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
                     ({result.sizeBytes.toLocaleString()} bytes)
                   </span>
                 </p>
-                <div className="mt-1 flex items-center gap-1.5 text-xs font-mono text-slate-700">
+                <div className="mt-1 flex flex-wrap items-center gap-x-1.5 text-xs font-mono text-slate-700">
                   <span>
                     {result.width} × {result.height} px
                   </span>
@@ -204,9 +204,9 @@ export const ResultCard: React.FC<ResultCardProps> = ({
 
             {/* Output Preview */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs text-slate-500">
+              <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-slate-500">
                 <span>Actual Output Preview</span>
-                <span className="font-mono">{result.fileName}</span>
+                <span className="max-w-full break-all text-right font-mono">{result.fileName}</span>
               </div>
 
               <div className="flex min-h-[180px] max-h-[340px] items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100/70 p-4">
@@ -223,10 +223,10 @@ export const ResultCard: React.FC<ResultCardProps> = ({
             <button
               type="button"
               onClick={handleDownload}
-              className="flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-transform active:scale-[0.99] hover:bg-slate-800 whitespace-nowrap"
+              className="flex min-h-[52px] w-full min-w-0 items-center justify-center gap-2.5 rounded-xl bg-slate-900 px-5 py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-transform active:scale-[0.99] hover:bg-slate-800 whitespace-normal"
             >
               <Download className="h-4 w-4 shrink-0" />
-              <span>
+              <span className="min-w-0 break-words">
                 Download {result.format.toUpperCase()} ({result.sizeKB} KB · {result.width}×{result.height})
               </span>
             </button>
