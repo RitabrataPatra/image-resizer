@@ -628,7 +628,7 @@ useEffect(() => {
               }`}
             >
               <CropIcon className="h-3.5 w-3.5 shrink-0" />
-              <span>{isCropBoxMode ? 'Editing Crop Box' : 'Crop Option'}</span>
+              <span>{isCropBoxMode ? 'Editing Crop Box' : 'Click to Crop'}</span>
             </button>
           </div>
 
