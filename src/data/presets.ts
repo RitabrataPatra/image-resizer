@@ -475,7 +475,7 @@ export const PRESETS: ImagePreset[] = [
       },
       {
         q: 'What if the output is not between 15 and 20 KB?',
-        a: 'ExactSpec reports when the encoded image misses the selected range. If it is too large, try smaller dimensions; if it is below the minimum, try larger dimensions. Change the target only if the destination permits it, then check the new output size.',
+        a: 'ExactSpec reports when the encoded image misses this preset’s starting range. If it is too large, try smaller dimensions. If it is below the preset minimum, first check whether your destination actually requires a minimum; if it specifies only a maximum, the smaller file may be acceptable. Change the target only if the destination permits it, then check the output size.',
       },
       {
         q: 'Is 20 KB the right limit for every application?',
@@ -524,7 +524,7 @@ export const PRESETS: ImagePreset[] = [
       },
       {
         q: 'What if the output is not between 80 and 100 KB?',
-        a: 'ExactSpec reports when the encoded image misses the selected range. If it is too large, try smaller dimensions; if it is below the minimum, try larger dimensions. Change the target only if the destination permits it, then check the new output size.',
+        a: 'ExactSpec reports when the encoded image misses this preset’s starting range. If it is too large, try smaller dimensions. If it is below the preset minimum, first check whether your destination actually requires a minimum; if it specifies only a maximum, the smaller file may be acceptable. Change the target only if the destination permits it, then check the output size.',
       },
       {
         q: 'Is 100 KB the right limit for every application?',
@@ -573,7 +573,7 @@ export const PRESETS: ImagePreset[] = [
       },
       {
         q: 'What if the output is not between 160 and 200 KB?',
-        a: 'ExactSpec reports when the encoded image misses the selected range. If it is too large, try smaller dimensions; if it is below the minimum, try larger dimensions. Change the target only if the destination permits it, then check the new output size.',
+        a: 'ExactSpec reports when the encoded image misses this preset’s starting range. If it is too large, try smaller dimensions. If it is below the preset minimum, first check whether your destination actually requires a minimum; if it specifies only a maximum, the smaller file may be acceptable. Change the target only if the destination permits it, then check the output size.',
       },
       {
         q: 'Is 200 KB the right limit for every application?',

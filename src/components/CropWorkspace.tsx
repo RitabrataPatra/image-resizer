@@ -565,7 +565,11 @@ useEffect(() => {
 
 
   return (
-    <section aria-labelledby="crop-heading" className="space-y-3">
+    <section
+      id="crop-preview"
+      aria-labelledby="crop-heading"
+      className="space-y-3"
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2
           id="crop-heading"

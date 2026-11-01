@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { X } from 'lucide-react';
+import { CheckCircle2, X } from 'lucide-react';
 import { PUBLISHED_PRESETS, PRESETS, type ImagePreset } from './data/presets';
 import {
   CropRect,
@@ -46,6 +46,7 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
   const [loadedImage, setLoadedImage] = useState<LoadedImageInfo | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isLoadingFile, setIsLoadingFile] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const [rotationDeg, setRotationDeg] = useState(0);
   const [aspectLocked, setAspectLocked] = useState(true);
@@ -70,14 +71,43 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
   const prevSourceUrlRef = useRef<string | null>(null);
   const lastPngWarningKeyRef = useRef<string | null>(null);
   const pngRangeWarningRef = useRef<HTMLDivElement>(null);
+  const uploadSuccessTimerRef = useRef<number | null>(null);
   const failedProcessingRequestRef = useRef<{
     key: string;
     message: string;
   } | null>(null);
 
+  useEffect(() => {
+    if (loadedImage) {
+      document
+        .getElementById('crop-preview')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [loadedImage]);
+
+  useEffect(
+    () => () => {
+      if (uploadSuccessTimerRef.current !== null) {
+        window.clearTimeout(uploadSuccessTimerRef.current);
+      }
+    },
+    []
+  );
+
   const parsedSpecs = useMemo(() => {
-    const minKB = Math.max(1, parseFloat(specs.minKB) || 10);
-    const maxKB = Math.max(1, parseFloat(specs.maxKB) || 50);
+    const rawMinKB =
+      specs.minKB.trim() === '' ? 0 : Number(specs.minKB.trim());
+    const rawMaxKB = Number(specs.maxKB.trim());
+    const hasValidSizeRange =
+      Number.isFinite(rawMinKB) &&
+      rawMinKB >= 0 &&
+      Number.isFinite(rawMaxKB) &&
+      rawMaxKB > 0 &&
+      rawMinKB <= rawMaxKB;
+    const minKB =
+      Number.isFinite(rawMinKB) && rawMinKB >= 0 ? rawMinKB : 0;
+    const maxKB =
+      Number.isFinite(rawMaxKB) && rawMaxKB > 0 ? rawMaxKB : 50;
 
     const wPx = parseInt(specs.widthPx, 10);
     const hPx = parseInt(specs.heightPx, 10);
@@ -100,8 +130,9 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
       targetW && targetH && targetW > 0 && targetH > 0 ? targetW / targetH : null;
 
     return {
-      minKB: Math.min(minKB, maxKB),
-      maxKB: Math.max(minKB, maxKB),
+      minKB,
+      maxKB,
+      hasValidSizeRange,
       targetW,
       targetH,
       targetAspect,
@@ -135,6 +166,11 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
   };
 
   const handleSelectFile = async (file: File) => {
+    if (uploadSuccessTimerRef.current !== null) {
+      window.clearTimeout(uploadSuccessTimerRef.current);
+      uploadSuccessTimerRef.current = null;
+    }
+    setUploadSuccess(false);
     setUploadError(null);
     setIsLoadingFile(true);
     try {
@@ -152,6 +188,11 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
         aspectLocked ? parsedSpecs.targetAspect : null
       );
       setCrop(initialCrop);
+      setUploadSuccess(true);
+      uploadSuccessTimerRef.current = window.setTimeout(() => {
+        setUploadSuccess(false);
+        uploadSuccessTimerRef.current = null;
+      }, 3000);
     } catch (err) {
       setUploadError(
         err instanceof Error
@@ -201,6 +242,12 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
   useEffect(() => {
     if (!loadedImage) {
       setProcessedOutput(null);
+      return;
+    }
+
+    if (!parsedSpecs.hasValidSizeRange) {
+      setProcessedOutput(null);
+      setIsProcessing(false);
       return;
     }
 
@@ -296,6 +343,7 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
     parsedSpecs.targetH,
     parsedSpecs.minKB,
     parsedSpecs.maxKB,
+    parsedSpecs.hasValidSizeRange,
     outputFormat,
   ]);
 
@@ -304,6 +352,7 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
 
     if (
       !processedOutput ||
+      !parsedSpecs.hasValidSizeRange ||
       processedOutput.format !== 'png' ||
       processedOutput.inRange ||
       !loadedImage
@@ -325,6 +374,7 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
     isProcessing,
     loadedImage,
     parsedSpecs.maxKB,
+    parsedSpecs.hasValidSizeRange,
     parsedSpecs.minKB,
     processedOutput,
   ]);
@@ -375,12 +425,41 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
 
   return (
     <div className="flex flex-col bg-slate-50 text-slate-900">
+      {uploadSuccess && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed left-1/2 top-4 z-[110] flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center gap-3 rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-emerald-950 shadow-lg"
+        >
+          <CheckCircle2
+            className="h-5 w-5 shrink-0 text-emerald-600"
+            aria-hidden="true"
+          />
+          <p className="flex-1 text-sm font-semibold">
+            Image uploaded successfully.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setUploadSuccess(false);
+              if (uploadSuccessTimerRef.current !== null) {
+                window.clearTimeout(uploadSuccessTimerRef.current);
+                uploadSuccessTimerRef.current = null;
+              }
+            }}
+            aria-label="Dismiss upload confirmation"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-emerald-900 hover:bg-emerald-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-900"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+      )}
       {pngRangeWarning && (
         <div
           ref={pngRangeWarningRef}
           role="alert"
           aria-live="assertive"
-          className="fixed left-1/2 top-4 z-[100] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-2xl border-2 border-amber-500 bg-amber-100 px-5 py-4 pr-14 text-amber-950 shadow-xl sm:px-6 sm:pr-16"
+          className="fixed left-1/2 top-24 z-[100] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-2xl border-2 border-amber-500 bg-amber-100 px-5 py-4 pr-14 text-amber-950 shadow-xl sm:px-6 sm:pr-16"
         >
           <button
             type="button"
@@ -394,7 +473,11 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
             This image may not meet the size you need
           </p>
           <p className="mt-1 text-sm font-medium leading-relaxed sm:text-base">
-            It is {pngRangeWarning.sizeKB} KB, but your limit is {pngRangeWarning.minKB}–{pngRangeWarning.maxKB} KB. Check that this size is okay before using it.
+            It is {pngRangeWarning.sizeKB} KB, but{' '}
+            {pngRangeWarning.minKB > 0
+              ? `your target is ${pngRangeWarning.minKB}–${pngRangeWarning.maxKB} KB.`
+              : `it exceeds your ${pngRangeWarning.maxKB} KB maximum.`}{' '}
+            Check that this size is okay before using it.
           </p>
           <p className="mt-2 text-sm leading-relaxed sm:text-base">
             Try JPG if you need to meet a file-size limit. You can also change the image dimensions and check the new file size.

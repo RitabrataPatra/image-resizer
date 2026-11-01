@@ -3,6 +3,7 @@ import '../index.css';
 import { BRAND_NAME, TOOL_NAME, SITE_URL } from '../site';
 import StructuredData from '../components/StructuredData.astro';
 import Analytics from '@vercel/analytics/astro';
+import { PUBLISHED_PRESETS } from '../data/presets';
 
 const {
   title = `${TOOL_NAME}: Resize Any Image to Any Size or KB`,
@@ -15,6 +16,12 @@ const pathname = Astro.url.pathname.endsWith('/')
   ? Astro.url.pathname
   : `${Astro.url.pathname}/`;
 const canonicalUrl = new URL(pathname, SITE_URL).toString();
+const isPresetPage = PUBLISHED_PRESETS.some((preset) =>
+  pathname.startsWith(`/${preset.slug}/`)
+);
+const navLinkClass =
+  'rounded-md px-2 py-1 transition-colors hover:text-slate-900 hover:underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900';
+const activeNavLinkClass = 'font-semibold text-slate-900';
 ---
 
 <!doctype html>
@@ -42,17 +49,36 @@ const canonicalUrl = new URL(pathname, SITE_URL).toString();
   </head>
   <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
     <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur-md">
-      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-8">
+      <div class="mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 py-3 sm:flex-row sm:justify-between sm:gap-4 sm:px-8">
         <a href="/" class="font-display text-lg font-bold tracking-tight text-slate-900">
           {BRAND_NAME}
         </a>
-        <nav class="hidden items-center gap-5 text-sm font-medium text-slate-600 md:flex">
-          <a href="/" class="hover:text-slate-900 hover:underline underline-offset-4">Home</a>
-          <a href="/about/" class="hover:text-slate-900 hover:underline underline-offset-4">About</a>
-          <a href="/contact/" class="hover:text-slate-900 hover:underline underline-offset-4">Contact</a>
-          <a href="/privacy/" class="hover:text-slate-900 hover:underline underline-offset-4">Privacy</a>
-          <a href="/terms/" class="hover:text-slate-900 hover:underline underline-offset-4">Terms</a>
-          <a href="/affiliate-disclosure/" class="hover:text-slate-900 hover:underline underline-offset-4">Disclosure</a>
+        <nav aria-label="Main" class="flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5 text-xs font-medium text-slate-600 sm:gap-x-3 sm:text-sm">
+          <a
+            href="/"
+            aria-current={pathname === '/' ? 'page' : undefined}
+            class:list={[navLinkClass, pathname === '/' && activeNavLinkClass]}
+          >Home</a>
+          <a
+            href="/all-sizes/"
+            aria-current={pathname === '/all-sizes/' || isPresetPage ? 'page' : undefined}
+            class:list={[navLinkClass, (pathname === '/all-sizes/' || isPresetPage) && activeNavLinkClass]}
+          >All sizes</a>
+          <a
+            href="/guides/reduce-image-file-size/"
+            aria-current={pathname.startsWith('/guides/') ? 'page' : undefined}
+            class:list={[navLinkClass, pathname.startsWith('/guides/') && activeNavLinkClass]}
+          >Guides</a>
+          <a
+            href="/about/"
+            aria-current={pathname === '/about/' ? 'page' : undefined}
+            class:list={[navLinkClass, pathname === '/about/' && activeNavLinkClass]}
+          >About</a>
+          <a
+            href="/contact/"
+            aria-current={pathname === '/contact/' ? 'page' : undefined}
+            class:list={[navLinkClass, pathname === '/contact/' && activeNavLinkClass]}
+          >Contact</a>
         </nav>
       </div>
     </header>
@@ -69,16 +95,54 @@ const canonicalUrl = new URL(pathname, SITE_URL).toString();
     ></script> -->
 
     <footer class="border-t border-slate-200 bg-white">
-      <div class="mx-auto max-w-6xl px-4 py-6 text-sm text-slate-600 sm:px-8">
-        <nav class="flex flex-wrap items-center justify-center gap-4 text-center">
-          <a href="/" class="hover:text-slate-900 hover:underline underline-offset-4">Home</a>
-          <a href="/about/" class="hover:text-slate-900 hover:underline underline-offset-4">About</a>
-          <a href="/contact/" class="hover:text-slate-900 hover:underline underline-offset-4">Contact</a>
-          <a href="/privacy/" class="hover:text-slate-900 hover:underline underline-offset-4">Privacy</a>
-          <a href="/terms/" class="hover:text-slate-900 hover:underline underline-offset-4">Terms</a>
-          <a href="/affiliate-disclosure/" class="hover:text-slate-900 hover:underline underline-offset-4">Affiliate Disclosure</a>
-          <a href="/all-sizes/" class="hover:text-slate-900 hover:underline underline-offset-4">All sizes</a>
+      <div class="mx-auto max-w-6xl space-y-3 px-4 py-6 text-sm text-slate-600 sm:px-8">
+        <nav aria-label="Footer" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center">
+          <a
+            href="/"
+            aria-current={pathname === '/' ? 'page' : undefined}
+            class:list={[navLinkClass, pathname === '/' && activeNavLinkClass]}
+          >Home</a>
+          <a
+            href="/all-sizes/"
+            aria-current={pathname === '/all-sizes/' || isPresetPage ? 'page' : undefined}
+            class:list={[navLinkClass, (pathname === '/all-sizes/' || isPresetPage) && activeNavLinkClass]}
+          >All sizes</a>
+          <a
+            href="/guides/reduce-image-file-size/"
+            aria-current={pathname.startsWith('/guides/') ? 'page' : undefined}
+            class:list={[navLinkClass, pathname.startsWith('/guides/') && activeNavLinkClass]}
+          >Guides</a>
+          <a
+            href="/about/"
+            aria-current={pathname === '/about/' ? 'page' : undefined}
+            class:list={[navLinkClass, pathname === '/about/' && activeNavLinkClass]}
+          >About</a>
+          <a
+            href="/contact/"
+            aria-current={pathname === '/contact/' ? 'page' : undefined}
+            class:list={[navLinkClass, pathname === '/contact/' && activeNavLinkClass]}
+          >Contact</a>
         </nav>
+        <nav aria-label="Legal" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-slate-100 pt-3 text-center text-xs">
+          <a
+            href="/privacy/"
+            aria-current={pathname === '/privacy/' ? 'page' : undefined}
+            class:list={[navLinkClass, pathname === '/privacy/' && activeNavLinkClass]}
+          >Privacy</a>
+          <a
+            href="/terms/"
+            aria-current={pathname === '/terms/' ? 'page' : undefined}
+            class:list={[navLinkClass, pathname === '/terms/' && activeNavLinkClass]}
+          >Terms</a>
+          <a
+            href="/affiliate-disclosure/"
+            aria-current={pathname === '/affiliate-disclosure/' ? 'page' : undefined}
+            class:list={[navLinkClass, pathname === '/affiliate-disclosure/' && activeNavLinkClass]}
+          >Affiliate Disclosure</a>
+        </nav>
+        <p class="pt-2 text-center text-xs text-slate-500">
+          © 2026 ExactSpec. All rights reserved.
+        </p>
       </div>
     </footer>
   </body>

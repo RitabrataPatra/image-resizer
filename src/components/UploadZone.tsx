@@ -121,7 +121,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
               Upload any image here
             </p>
             <p className="mt-1 max-w-md text-lg sm:text-lg text-slate-500">
-              Drag and drop a JPG or PNG file here, or choose from your phone’s camera roll. Everything stays on your device.
+              {/* Drag and drop a JPG or PNG file here, or choose from your phone’s camera roll. Everything stays on your device. */}
             </p>
             <br/>
             <p className="text-md font-bold text-slate-900">

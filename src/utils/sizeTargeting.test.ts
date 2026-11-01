@@ -60,6 +60,16 @@ describe('findJpegQualityForSizeRange', () => {
     assert.equal(result.sizeKB, 38);
   });
 
+  it('treats a zero minimum as a maximum-only target', async () => {
+    const encode = createMockEncoder(3, 12);
+    const result = await findJpegQualityForSizeRange(encode, 0, 20);
+
+    assert.equal(result.inRange, true);
+    assert.equal(result.status, 'in_range');
+    assert.equal(result.quality, 1.0);
+    assert.equal(result.sizeKB, 12);
+  });
+
   it('explains in plain language when even 100% quality is below minKB', async () => {
     const encode = createMockEncoder(3, 12);
     const result = await findJpegQualityForSizeRange(encode, 20, 50);

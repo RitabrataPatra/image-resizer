@@ -32,6 +32,13 @@ export const ResultCard: React.FC<ResultCardProps> = ({
   outputFormat,
   onAutoScaleDimensions,
 }) => {
+  const resultExplanation =
+    result && minKB <= 0
+      ? result.inRange
+        ? `Output is ${result.sizeKB} KB, within the ${maxKB} KB maximum.`
+        : `Output is ${result.sizeKB} KB, above your ${maxKB} KB maximum.`
+      : result?.explanation;
+
   const handleDownload = () => {
     if (!result) return;
     const link = document.createElement('a');
@@ -64,7 +71,9 @@ export const ResultCard: React.FC<ResultCardProps> = ({
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900" />
             <p className="mt-3 text-sm font-medium text-slate-700">
               {outputFormat === 'jpg'
-                ? `Optimizing JPEG quality to match ${minKB}–${maxKB} KB…`
+                ? minKB > 0
+                  ? `Optimizing JPEG quality to match ${minKB}–${maxKB} KB…`
+                  : `Optimizing JPEG quality to stay under ${maxKB} KB…`
                 : 'Encoding PNG and checking its actual file size…'}
             </p>
           </div>
@@ -94,12 +103,32 @@ export const ResultCard: React.FC<ResultCardProps> = ({
                         : 'Closest possible JPEG result'}
                   </p>
                   <span className="text-xs font-mono">
-                    Target: {minKB}–{maxKB} KB
+                    Target: {minKB > 0 ? `${minKB}–${maxKB} KB` : `up to ${maxKB} KB`}
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm leading-relaxed opacity-90">
-                  {result.explanation}
+                  {resultExplanation}
                 </p>
+
+                {!result.inRange && (
+                  <p
+                    role="status"
+                    aria-live="polite"
+                    className="rounded-lg border border-amber-300/70 bg-white/70 px-3 py-2 text-xs font-medium leading-relaxed"
+                  >
+                    {minKB > 0
+                      ? `Couldn't reach the ${minKB}–${maxKB} KB range at `
+                      : `Couldn't stay under ${maxKB} KB at `}
+                    {result.width} × {result.height} px.{' '}
+                    {result.format === 'jpg' ? 'Best result' : 'Current output'}
+                    : {result.sizeKB} KB.{' '}
+                    {result.status === 'above_max'
+                      ? 'Try smaller dimensions.'
+                      : result.status === 'below_min'
+                        ? 'Try larger dimensions.'
+                        : 'Try adjusting the dimensions.'}
+                  </p>
+                )}
 
                 {!result.inRange &&
                   result.format === 'jpg' &&
