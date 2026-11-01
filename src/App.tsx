@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { CheckCircle2, X } from 'lucide-react';
+import { ArrowRight, CheckCircle2, X } from 'lucide-react';
 import { PUBLISHED_PRESETS, PRESETS, type ImagePreset } from './data/presets';
 import {
   CropRect,
@@ -22,12 +22,22 @@ import { CropWorkspace } from './components/CropWorkspace';
 import { ResultCard } from './components/ResultCard';
 
 const DEFAULT_PRESET = PUBLISHED_PRESETS[0] ?? PRESETS[0];
+const MOBILE_STEPS = [
+  { id: 'photo', label: 'Photo' },
+  { id: 'requirements', label: 'Size' },
+  { id: 'crop', label: 'Crop' },
+  { id: 'result', label: 'Download' },
+] as const;
+type MobileStep = (typeof MOBILE_STEPS)[number]['id'];
 
 const getPresetBySlug = (presetSlug?: string) =>
   PRESETS.find((preset) => preset.slug === presetSlug) ?? DEFAULT_PRESET;
 
 export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
-  const preset = getPresetBySlug(initialPresetSlug);
+  const routePreset = PRESETS.find(
+    (candidate) => candidate.slug === initialPresetSlug
+  );
+  const preset = routePreset ?? getPresetBySlug(initialPresetSlug);
 
   const [specs, setSpecs] = useState<TargetSpecs>(() => ({
     minKB: String(preset.minKB),
@@ -44,6 +54,9 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
   }));
 
   const [loadedImage, setLoadedImage] = useState<LoadedImageInfo | null>(null);
+  const [activeMobileStep, setActiveMobileStep] =
+    useState<MobileStep>('photo');
+  const [maxMobileStep, setMaxMobileStep] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isLoadingFile, setIsLoadingFile] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
@@ -77,11 +90,28 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
     message: string;
   } | null>(null);
 
+  const goToMobileStep = (step: MobileStep) => {
+    setActiveMobileStep(step);
+    window.requestAnimationFrame(() => {
+      if (window.matchMedia('(max-width: 1023px)').matches) {
+        document
+          .getElementById('mobile-step-content')
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  };
+
   useEffect(() => {
     if (loadedImage) {
-      document
-        .getElementById('crop-preview')
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setMaxMobileStep((current) => Math.max(current, 1));
+      setActiveMobileStep('requirements');
+      if (window.matchMedia('(max-width: 1023px)').matches) {
+        goToMobileStep('requirements');
+      } else {
+        document
+          .getElementById('crop-preview')
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   }, [loadedImage]);
 
@@ -484,62 +514,189 @@ export function Resizer({ initialPresetSlug }: { initialPresetSlug?: string }) {
           </p>
         </div>
       )}
-      <section className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-8 sm:py-8">
-        <div className="grid grid-cols-1 gap-6 sm:gap-8 items-start">
-          <div className="lg:col-span-6 space-y-6">
-            <UploadZone
-              loadedImage={loadedImage}
-              error={uploadError}
-              isLoading={isLoadingFile}
-              onSelectFile={handleSelectFile}
-              onLoadSample={handleLoadSample}
-            />
+      <section className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pb-24 sm:px-8 sm:py-8 lg:pb-8">
+        <nav
+          aria-label="Image resize steps"
+          className="mb-5 lg:hidden"
+        >
+          <p className="mb-2 text-xs font-medium text-slate-600">
+            Step {MOBILE_STEPS.findIndex((step) => step.id === activeMobileStep) + 1} of {MOBILE_STEPS.length}
+          </p>
+          <ol className="grid grid-cols-[minmax(0,1fr)_minmax(1rem,1fr)_minmax(0,1fr)_minmax(1rem,1fr)_minmax(0,1fr)_minmax(1rem,1fr)_minmax(0,1fr)] items-center gap-0.5 md:grid-cols-[minmax(0,1fr)_minmax(2rem,1fr)_minmax(0,1fr)_minmax(2rem,1fr)_minmax(0,1fr)_minmax(2rem,1fr)_minmax(0,1fr)]">
+            {MOBILE_STEPS.map((step, index) => {
+              const activeStepIndex = MOBILE_STEPS.findIndex(
+                (currentStep) => currentStep.id === activeMobileStep
+              );
+              const isCurrent = activeMobileStep === step.id;
+              const isDone = index < activeStepIndex;
+              const isAvailable = index <= maxMobileStep;
+              return (
+                <React.Fragment key={step.id}>
+                  <li className="min-w-0">
+                    <button
+                      type="button"
+                      disabled={!isAvailable}
+                      aria-current={isCurrent ? 'step' : undefined}
+                      aria-label={`Step ${index + 1}: ${step.label}`}
+                      onClick={() => goToMobileStep(step.id)}
+                      className="flex min-h-[56px] w-full flex-col items-center justify-center gap-1 px-0.5 text-[10px] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold ${
+                          isCurrent
+                            ? 'border-slate-900 bg-slate-900 text-white'
+                            : isDone
+                              ? 'border-emerald-600 bg-white text-emerald-700'
+                              : 'border-slate-300 bg-white text-slate-500'
+                        }`}
+                      >
+                        {index + 1}
+                      </span>
+                      <span
+                        className={
+                          isCurrent
+                            ? 'text-slate-900'
+                            : isDone
+                              ? 'text-emerald-700'
+                              : 'text-slate-500'
+                        }
+                      >
+                        {step.label}
+                      </span>
+                    </button>
+                  </li>
+                  {index < MOBILE_STEPS.length - 1 && (
+                    <li
+                      aria-hidden="true"
+                      className={`relative flex w-full items-center ${
+                        isDone ? 'text-emerald-600' : 'text-slate-400'
+                      }`}
+                    >
+                      <span className="h-px w-full bg-current" />
+                      <ArrowRight className="absolute right-0 h-3 w-3 bg-slate-50" />
+                    </li>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </ol>
+        </nav>
 
-            <RequirementsForm
-              specs={specs}
-              onChangeSpecs={handleChangeSpecs}
-              onApplyPreset={handleApplyPreset}
-              outputFormat={outputFormat}
-              onChangeOutputFormat={setOutputFormat}
-            />
+        <div className="grid grid-cols-1 gap-6 sm:gap-8 items-start">
+          <div
+            className={`lg:col-span-6 space-y-6 ${
+              activeMobileStep === 'crop' || activeMobileStep === 'result'
+                ? 'hidden lg:block'
+                : ''
+            }`}
+          >
+            <div
+              id={activeMobileStep === 'photo' ? 'mobile-step-content' : undefined}
+              className={`scroll-mt-24 ${
+                activeMobileStep === 'photo' ? '' : 'hidden lg:block'
+              }`}
+            >
+              <UploadZone
+                loadedImage={loadedImage}
+                error={uploadError}
+                isLoading={isLoadingFile}
+                onSelectFile={handleSelectFile}
+                onLoadSample={handleLoadSample}
+              />
+            </div>
+
+            <div
+              id={
+                activeMobileStep === 'requirements'
+                  ? 'mobile-step-content'
+                  : undefined
+              }
+              className={`scroll-mt-24 ${
+                activeMobileStep === 'requirements' ? '' : 'hidden lg:block'
+              }`}
+            >
+              <RequirementsForm
+                specs={specs}
+                onChangeSpecs={handleChangeSpecs}
+                onApplyPreset={handleApplyPreset}
+                outputFormat={outputFormat}
+                onChangeOutputFormat={setOutputFormat}
+                showPresetContext={Boolean(routePreset)}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setMaxMobileStep((current) => Math.max(current, 2));
+                  goToMobileStep('crop');
+                }}
+                className="mt-4 min-h-[48px] w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 lg:hidden"
+              >
+                Continue to crop
+              </button>
+            </div>
           </div>
 
           <div className="lg:col-span-6 space-y-6">
             {loadedImage ? (
               <>
-                <CropWorkspace
-                  image={loadedImage}
-                  crop={crop}
-                  rotationDeg={rotationDeg}
-                  targetWidth={parsedSpecs.targetW}
-                  targetHeight={parsedSpecs.targetH}
-                  targetAspect={parsedSpecs.targetAspect}
-                  activePresetName={specs.activePresetName}
-                  aspectLocked={aspectLocked}
-                  processedOutput={processedOutput}
-                  isProcessing={isProcessing}
-                  outputFormat={outputFormat}
-                  onChangeCrop={setCrop}
-                  onToggleAspectLock={(nextLocked) =>
-                    setAspectLocked((prev) =>
-                      typeof nextLocked === 'boolean' ? nextLocked : !prev
-                    )
-                  }
-                  onRotate={() => setRotationDeg((prev) => (prev + 90) % 360)}
-                />
+                <div
+                  id={activeMobileStep === 'crop' ? 'mobile-step-content' : undefined}
+                  className={`scroll-mt-24 ${
+                    activeMobileStep === 'crop' ? '' : 'hidden lg:block'
+                  }`}
+                >
+                  <CropWorkspace
+                    image={loadedImage}
+                    crop={crop}
+                    rotationDeg={rotationDeg}
+                    targetWidth={parsedSpecs.targetW}
+                    targetHeight={parsedSpecs.targetH}
+                    targetAspect={parsedSpecs.targetAspect}
+                    activePresetName={specs.activePresetName}
+                    aspectLocked={aspectLocked}
+                    processedOutput={processedOutput}
+                    isProcessing={isProcessing}
+                    outputFormat={outputFormat}
+                    onChangeCrop={setCrop}
+                    onToggleAspectLock={(nextLocked) =>
+                      setAspectLocked((prev) =>
+                        typeof nextLocked === 'boolean' ? nextLocked : !prev
+                      )
+                    }
+                    onRotate={() => setRotationDeg((prev) => (prev + 90) % 360)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMaxMobileStep((current) => Math.max(current, 3));
+                      goToMobileStep('result');
+                    }}
+                    className="mt-4 min-h-[48px] w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 lg:hidden"
+                  >
+                    Continue to download
+                  </button>
+                </div>
 
-                <ResultCard
-                  original={loadedImage}
-                  result={processedOutput}
-                  isProcessing={isProcessing}
-                  minKB={parsedSpecs.minKB}
-                  maxKB={parsedSpecs.maxKB}
-                  outputFormat={outputFormat}
-                  onAutoScaleDimensions={handleAutoScaleDimensions}
-                />
+                <div
+                  id={activeMobileStep === 'result' ? 'mobile-step-content' : undefined}
+                  className={`scroll-mt-24 ${
+                    activeMobileStep === 'result' ? '' : 'hidden lg:block'
+                  }`}
+                >
+                  <ResultCard
+                    original={loadedImage}
+                    result={processedOutput}
+                    isProcessing={isProcessing}
+                    minKB={parsedSpecs.minKB}
+                    maxKB={parsedSpecs.maxKB}
+                    outputFormat={outputFormat}
+                    onAutoScaleDimensions={handleAutoScaleDimensions}
+                  />
+                </div>
               </>
             ) : (
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 text-center space-y-4">
+              <div className="hidden rounded-2xl border border-slate-200 bg-white p-6 text-center space-y-4 lg:block sm:p-8">
                 <p className="text-base font-semibold text-slate-900">
                   Ready to Crop &amp; Compress
                 </p>

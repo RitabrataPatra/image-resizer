@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import {
-  PUBLISHED_PRESETS,
   QUICK_PRESETS,
   type ImagePreset,
 } from '../data/presets';
@@ -25,6 +24,7 @@ interface RequirementsFormProps {
   onApplyPreset: (preset: ImagePreset) => void;
   outputFormat: OutputFormat;
   onChangeOutputFormat: (format: OutputFormat) => void;
+  showPresetContext?: boolean;
 }
 
 export const RequirementsForm: React.FC<RequirementsFormProps> = ({
@@ -33,6 +33,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
   onApplyPreset,
   outputFormat,
   onChangeOutputFormat,
+  showPresetContext = false,
 }) => {
   const quickPresets = QUICK_PRESETS;
   const [dimensionsOpen, setDimensionsOpen] = useState(false);
@@ -178,79 +179,68 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
         </label>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 space-y-5">
-        {/* Quick Presets from presets.ts */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between gap-3">
-            <label className="text-xs font-semibold text-slate-700">
-              Quick Presets
-            </label>
+      <div className="rounded-2xl border border-slate-200 bg-white p-3 sm:space-y-5 sm:p-5 space-y-3">
+        {showPresetContext && (
+          <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+            <p className="min-w-0 text-xs text-slate-700">
+              <span className="font-medium text-slate-500">
+                Current preset:
+              </span>{' '}
+              <span className="break-words font-semibold text-slate-900">
+                {specs.activePresetName ?? 'Custom settings'}
+              </span>
+            </p>
+            <a
+              href="/all-sizes/"
+              className="shrink-0 text-xs font-semibold text-slate-700 underline decoration-slate-300 underline-offset-2 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
+            >
+              Choose a different preset
+            </a>
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center gap-2">
+          <label
+            htmlFor="quick-preset-select"
+            className="shrink-0 text-xs font-semibold text-slate-700"
+          >
+            Quick presets
+          </label>
+          <select
+            id="quick-preset-select"
+            value={
+              quickPresets.find(
+                (preset) => preset.name === specs.activePresetName
+              )?.slug ?? ''
+            }
+            onChange={(event) => {
+              const nextPreset = quickPresets.find(
+                (preset) => preset.slug === event.target.value
+              );
+              if (nextPreset) applyPreset(nextPreset);
+            }}
+            className="min-h-[40px] min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-xs font-medium text-slate-900 focus:border-slate-900 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
+          >
+            <option value="">Choose a preset…</option>
+            {quickPresets.map((preset) => (
+              <option key={preset.slug} value={preset.slug}>
+                {preset.name} ({preset.minKB}–{preset.maxKB} KB)
+              </option>
+            ))}
+          </select>
+          {!showPresetContext && (
             <a
               href="/all-sizes/"
               className="shrink-0 text-[11px] font-medium text-slate-500 underline decoration-slate-300 underline-offset-2 hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
             >
-              More presets →
+              All presets
             </a>
-          </div>
-          <div className="grid grid-cols-1 gap-2 min-[480px]:grid-cols-2 lg:grid-cols-4">
-            {quickPresets.map((preset) => {
-              const isSelected = specs.activePresetName === preset.name;
-              const hasPublishedPage = PUBLISHED_PRESETS.some(
-                (publishedPreset) => publishedPreset.slug === preset.slug
-              );
-              const className = `flex min-h-[48px] flex-col items-start justify-center rounded-xl border px-3.5 py-2.5 text-left transition-colors ${
-                isSelected
-                  ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
-                  : 'border-slate-200 bg-slate-50/70 text-slate-900 hover:border-slate-300 hover:bg-slate-100/80'
-              } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900`;
-
-              return (
-                hasPublishedPage ? (
-                  <a key={preset.name} href={`/${preset.slug}/`} className={className}>
-                    <span className="w-full break-words text-xs font-semibold">
-                      {preset.name}
-                    </span>
-                    <span
-                      className={`mt-0.5 text-[11px] font-mono ${
-                        isSelected ? 'text-slate-300' : 'text-slate-500'
-                      }`}
-                    >
-                      {preset.width !== undefined && preset.height !== undefined
-                        ? `${preset.width}×${preset.height} px · `
-                        : ''}
-                      {preset.minKB}–{preset.maxKB} KB
-                    </span>
-                  </a>
-                ) : (
-                  <button
-                    key={preset.name}
-                    type="button"
-                    onClick={() => applyPreset(preset)}
-                    className={className}
-                  >
-                    <span className="w-full break-words text-xs font-semibold">
-                      {preset.name}
-                    </span>
-                    <span
-                      className={`mt-0.5 text-[11px] font-mono ${
-                        isSelected ? 'text-slate-300' : 'text-slate-500'
-                      }`}
-                    >
-                      {preset.width !== undefined && preset.height !== undefined
-                        ? `${preset.width}×${preset.height} px · `
-                        : ''}
-                      {preset.minKB}–{preset.maxKB} KB
-                    </span>
-                  </button>
-                )
-              );
-            })}
-          </div>
+          )}
         </div>
 
         <section
           aria-labelledby="file-size-heading"
-          className="border-t border-slate-100 pt-4 space-y-2.5"
+          className="border-t border-slate-100 pt-3 space-y-2 sm:pt-4 sm:space-y-2.5"
         >
           <div className="flex items-baseline justify-between">
             <h3
@@ -262,16 +252,16 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
             <span className="text-xs text-slate-500">Max size required</span>
           </div>
 
-          <p className="text-xs text-slate-500">
+          {/* <p className="text-xs text-slate-500">
             Set a maximum output size in KB. Add a minimum only if your
             destination requires a size range.
-          </p>
+          </p> */}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label
                 htmlFor="min-kb-input"
-                className="block text-xs text-slate-600 mb-1"
+                className="mb-1 flex min-h-8 items-end text-xs leading-tight text-slate-600"
               >
                 Min Size (KB), optional
               </label>
@@ -303,7 +293,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
             <div>
               <label
                 htmlFor="max-kb-input"
-                className="block text-xs text-slate-600 mb-1"
+                className="mb-1 flex min-h-8 items-end text-xs leading-tight text-slate-600"
               >
                 Max Size (KB)
               </label>
@@ -356,7 +346,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
 
         <section
           aria-labelledby="dimensions-section-heading"
-          className="border-t border-slate-100 pt-4 space-y-3"
+          className="border-t border-slate-100 pt-3 space-y-2 sm:pt-4 sm:space-y-3"
         >
           <h3
             id="dimensions-section-heading"
@@ -449,7 +439,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
               <div>
                 <label
                   htmlFor="width-px-input"
-                  className="block text-xs text-slate-600 mb-1"
+                  className="mb-1 flex min-h-8 items-end text-xs leading-tight text-slate-600"
                 >
                   Width (px)
                 </label>
@@ -476,7 +466,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
               <div>
                 <label
                   htmlFor="height-px-input"
-                  className="block text-xs text-slate-600 mb-1"
+                  className="mb-1 flex min-h-8 items-end text-xs leading-tight text-slate-600"
                 >
                   Height (px)
                 </label>
@@ -512,7 +502,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
                 <div>
                   <label
                     htmlFor="width-cm-input"
-                    className="block text-xs text-slate-600 mb-1"
+                    className="mb-1 flex min-h-8 items-end text-xs leading-tight text-slate-600"
                   >
                     Width (cm)
                   </label>
@@ -540,7 +530,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
                 <div>
                   <label
                     htmlFor="height-cm-input"
-                    className="block text-xs text-slate-600 mb-1"
+                    className="mb-1 flex min-h-8 items-end text-xs leading-tight text-slate-600"
                   >
                     Height (cm)
                   </label>
@@ -568,7 +558,7 @@ export const RequirementsForm: React.FC<RequirementsFormProps> = ({
                 <div className="col-span-2 sm:col-span-1">
                   <label
                     htmlFor="dpi-input"
-                    className="block text-xs text-slate-600 mb-1"
+                    className="mb-1 flex min-h-8 items-end text-xs leading-tight text-slate-600"
                   >
                     Resolution (DPI)
                   </label>
